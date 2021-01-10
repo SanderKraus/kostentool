@@ -402,7 +402,7 @@ def processData(request):
     c = conn.cursor()
 
     # init data frame
-    df = pd.read_excel(file, header=1, usecols="B:ZZZZZ")
+    df = pd.read_excel(file.read(), header=1, usecols="B:ZZZZZ")
     df = df.loc[:, ~df.columns.str.contains("^Unnamed")]
 
     # extract header and types
