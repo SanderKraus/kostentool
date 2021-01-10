@@ -6,8 +6,4 @@ __pycache__
 
 # For Development | activate in Production
 migrations
-<<<<<<< HEAD
 app.db
-=======
-app.db
->>>>>>> e9958215e18c4460a0d9aab78efbc427c24ecae1
