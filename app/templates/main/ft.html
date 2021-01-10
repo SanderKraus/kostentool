@@ -1,0 +1,413 @@
+{% extends 'base.html' %} {% block content %}
+<style>
+  .form-group input {
+    width: auto;
+  }
+
+  table input {
+    width: 25px;
+  }
+
+  .container-wrapper {
+    background-color: rgba(0, 84, 159, 0.5);
+    border-radius: 4px;
+  }
+
+  .clickLabel {
+    cursor: pointer;
+    border-radius: 6px;
+  }
+
+  .table-container {
+    background-color: white;
+    border-radius: 4px;
+  }
+
+  .jumbotron {
+    background-color: rgba(0, 84, 159, 0.5);
+    border-radius: 4px;
+  }
+
+  .jumbotron2 {
+    background-color: rgba(117, 169, 214, 0.8);
+    border-radius: 4px;
+  }
+
+  .jumbotron3 {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    color: rgba(0, 84, 159, 1);
+  }
+
+  .jumbotron4 {
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 4px;
+    color: rgba(0, 84, 159, 1);
+  }
+
+  .Architektur {
+    background: none;
+    color: black;
+    font-style: normal;
+    font-weight: normal;
+  }
+
+  .FS {
+    margin-left: 50px;
+    color: black;
+    background-color: transparent;
+    border: transparent;
+    height: 30px;
+    width: auto;
+    font-size: 24px;
+  }
+
+  .FTdaten {
+    margin-left: 50px;
+    text-align: center;
+    font-size: 11pt;
+    font-family: arial;
+    text-decoration: none;
+    color: black;
+    background-color: rgba(0, 84, 159, 0.1);
+    border-collapse: separate;
+    border-spacing: 10px;
+  }
+
+  .Gelb {
+    color: #FFFF00;
+  }
+
+  .Grün {
+    color: #00FF00;
+  }
+
+  .Rot {
+    color: #FF0000;
+  }
+</style>
+<div class="container">
+  <div class="jumbotron row">
+    <div class="container text-white text-center">
+      <h2 class="display-4 text-center pb-5">
+        Fertigungssystem
+      </h2>
+    </div>
+    <div class="container text-white">
+      <div class="jumbotron3 mt-3">
+        <div class="card-body">
+          <h5 class="card-title">FCT-Table</h5>
+          <p class="card-text">
+          </p>
+          <div class="p-2">
+            <table class="table table-striped table-responsive">
+              <tr>
+                <th></th>
+                {% for fct in fct %}
+                <th colspan="2" style="text-align: center">{{ fct.name }}</th>
+                {% endfor %}
+                <th style="text-align: center">Fertigungsergebnis</th>
+                <th style="text-align: center">Produktanforderungen</th>
+              </tr>
+              <tr>
+                <th></th>
+                {% for fct in fct %}
+                <th>Input</th>
+                <th>Output</th>
+                {% endfor %}
+
+              </tr>
+              <tr>
+                <th><u>Kontur (F1)</u></th>
+                {% for fct in fct %}
+                {% if not (fct.breite == '' and fct.hoehe == '' and fct.laenge == '' and fct.rauheit == '') %}
+                <th style="text-align: center" colspan="2">1</th>
+                {% else %}
+                <th style="text-align: center" colspan="2">0</th>
+                {% endif %}
+                {% endfor %}
+                <td>-</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <th>Breite</th>
+                {% for fct in fct %}
+                {% if not fct.breite_ein == '' %}
+                <td>{{ fct.breite_ein }}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                {% if not fct.breite == '' %}
+                <td>{{ fct.breite }}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                {% endfor %}
+                <td>{{ breite }}</td>
+                <td>{{ tool.width }}</td>
+              </tr>
+              <tr>
+                <th>Höhe</th>
+                {% for fct in fct %}
+                {% if not fct.hoehe_ein == '' %}
+                <td>{{ fct.hoehe_ein }}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                {% if not fct.hoehe == '' %}
+                <td>{{ fct.hoehe }}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                {% endfor %}
+                <td>{{ hoehe }}</td>
+                <td>{{ tool.height }}</td>
+              </tr>
+              <tr>
+                <th>Länge</th>
+                {% for fct in fct %}
+                {% if not fct.laenge_ein == '' %}
+                <td>{{ fct.laenge_ein }}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                {% if not fct.laenge == '' %}
+                <td>{{ fct.laenge }}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                {% endfor %}
+                <td>{{ laenge }}</td>
+                <td>{{ tool.length }}</td>
+              </tr>
+              <tr>
+                <th>Rauheit</th>
+                {% for fct in fct %}
+                {% if not fct.rauheit_ein == '' %}
+                <td>{{ fct.rauheit_ein }}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                {% if not fct.rauheit == '' %}
+                <td>{{ fct.rauheit }}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                {% endfor %}
+                <td>{{ rauheit }}</td>
+                <td>{{ tool.roughness }}</td>
+              </tr>
+              <tr>
+                <th><u>Bohrung (F2)</u></th>
+                {% for fct in fct %}
+                {% if not fct.durchmesser == '' %}
+                <th style="text-align: center" colspan="2">1</th>
+                {% else %}
+                <th style="text-align: center" colspan="2">0</th>
+                {% endif %}
+
+                {% endfor %}
+                <td>-</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <th>Durchmesser</th>
+                {% for fct in fct %}
+                {% if not fct.durchmesser_ein == '' %}
+                <td>{{ fct.durchmesser_ein }}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                {% if not fct.durchmesser == '' %}
+                <td>{{ fct.durchmesser }}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                {% endfor %}
+                <td>{{ durchmesser }}</td>
+                <td>{{ tool.diameter }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jumbotron4 row">
+
+    <div class="col-3 p-4">
+      <div class="jumbotron3">
+        <div class="card-body">
+          <h5 class="card-title">Fertigungstechnologie</h5>
+          <p class="card-text">Neue Fertigungstechnologie hinzufügen</p>
+          <form action="/main/save" method="POST">
+            <input type="button" class="w-100 btn btn-secondary" name="button" value="Hinzufügen"
+              onclick="window.open(' /main/create_technology ', 'einNeuesFenster');">
+          </form>
+        </div>
+      </div>
+
+      <div class="jumbotron3 mt-3">
+        <div class="card-body">
+          <h5 class="card-title">Alternativtechnologie</h5>
+          <p class="card-text">Neue alternative Fertigungstechnologie hinzufügen
+          </p>
+          <form action="/main/save" method="POST">
+            <input type="button" class="w-100 btn btn-secondary" name="button" value="Hinzufügen"
+              onclick="window.open(' /main/create_alttechnology ', 'einNeuesFenster');">
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-9 p-4">
+
+      <div class="jumbotron3">
+        <div class="card-body">
+          <h5 class="card-title">Aktuelles Fertigungssystem</h5>
+          <p class="card-text">Aktuelles Fertigungssystem mit einsetzbaren Alternativtechnologie
+          </p>
+          {% for techs in techs %}
+          <div class="jumbotron4">
+            <form action="/main/save" method="POST">
+
+              <div class="jumbotron4">
+                <div class="mt-1 p-2">
+
+
+                  <h3><select class="w-100 jumbotron3" name="ft{{ loop.index }}" id="ft{{ loop.index }}">
+
+                      <optgroup label="Aktuelle Fertigungstechnologie">
+                        {% if techs.capability == 1 %}
+                        <option class="Gelb" value="{{ techs.id }}">{{ techs.name }}</option>
+                        {% elif techs.capability == 2 %}
+                        <option class="Grün" value="{{ techs.id }}">{{ techs.name }}</option>
+                        {% elif techs.capability == 0 %}
+                        <option class="Rot" value="{{ techs.id }}">{{ techs.name }}</option>
+                        {% endif %}
+                      </optgroup>
+
+                      <optgroup label="Altrnative Fertigungstechnologie">
+                        {% for alttech in alttech %}
+                        {% if techs.id == alttech.verknüpfung and alttech.capability == 1 %}
+                        <option class="Gelb" value="{{ alttech.id }}"> {{ alttech.name }} </option>
+                        {% elif techs.id == alttech.verknüpfung and alttech.capability == 2%}
+                        <option class="Grün" value="{{ alttech.id }}"> {{ alttech.name }} </option>
+                        {% elif techs.id == alttech.verknüpfung and alttech.capability == 0%}
+                        <option class="Rot" value="{{ alttech.id }}">{{ alttech.name }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </optgroup>
+
+                    </select>
+                  </h3>
+                </div>
+              </div>
+
+          </div>
+          <font size="16"></font>
+          {% endfor %}
+        </div>
+        <div class="jumbotron4 p-3 d-flex justify-content-center">
+          <input type="submit" class="w-100 btn btn-primary" name="button" value="Eingabe bestätigen">
+          </form>
+        </div>
+        <div class="jumbotron4 p-3">
+          {% for techs in techs %}
+          {% if techs.capability == 0 %}
+          <h3> <b class="Rot">Folgende Technologien sind nicht fähig: {{ techs.name }}</b></h3>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+
+
+
+      <div class="jumbotron3 mt-3">
+        <div class="card-body">
+          <h5 class="card-title">Datenbank der Fertigungstechnologien</h5>
+          <p class="card-text">Datenbank der Fertigungstechnologien
+          </p>
+
+          <div class="tab-content table-container">
+            <div class="tab-pane fade show active">
+              {% if techs %}
+              <!--<h3 class="p-3">Technologien</h3>-->
+              <div class="p-2">
+                <table class="table table-hover">
+                  <thead>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Upload am</th>
+                    <th>Verändert am</th>
+                  </thead>
+                  <tbody>
+                    {% for tech in techs %}
+                    <tr data-toggle="modal" data-target="#sanderModal">
+                      <td>{{tech.id}}</td>
+                      <td>{{tech.name}}</td>
+                      <td>{{tech.position}}</td>
+                      <td>{{tech.created_on}}</td>
+                      <td>{{tech.updated_on}}</td>
+                      <td>
+                        <a href="{{url_for('main.update_technology', id=tech.id) }}"
+                          class="btn btn-light btn-sm">Edit</a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="jumbotron3 mt-3">
+        <div class="card-body">
+          <h5 class="card-title">Datenbank der Alternativttechnologien</h5>
+          <p class="card-text">Datenbank der Alternativttechnologien
+          </p>
+
+          <div class="tab-content table-container">
+            <div class="tab-pane fade show active">
+              {% if alttech %}
+              <!--<h3 class="p-3">Technologien</h3>-->
+              <div class="p-2">
+                <table class="table table-hover">
+                  <thead>
+                    <th>#</th>
+                    <th>Name</th>
+
+                    <th>Upload am</th>
+                    <th>Verändert am</th>
+                  </thead>
+                  <tbody>
+                    {% for alttech in alttech %}
+                    <tr data-toggle="modal" data-target="#sanderModal">
+                      <td>{{alttech.id}}</td>
+                      <td>{{alttech.name}}</td>
+                      <td>{{alttech.position}}</td>
+                      <td>{{alttech.created_on}}</td>
+                      <td>{{alttech.updated_on}}</td>
+                      <td>
+                        <a href="{{url_for('main.update_technology', id=alttech.id) }}"
+                          class="btn btn-light btn-sm">Edit</a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock%}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %} {% block title %}HOME{% endblock %} {% block content
+    %}
+<style>
+    .jumbotron {
+        background-color: rgba(0, 84, 159, 0.5);
+        border-radius: 4px;
+    }
+</style>
+<style>
+    .jumbotron2 {
+        background-color: rgba(117, 169, 214, 0.8);
+        border-radius: 4px;
+    }
+</style>
+<div class="jumbotron text-white">
+    <h2 class="display-2">Produktarchitektur</h2>
+    <div class="jumbotron2 text-white">
+        <h3 class="display-4 p-5">
+            Web-Application zur teilautomatisierten Bewertung
+            technologischer und wirtschaftlicher Auswirkungen
+            von Engineering Change Requests bei der Gestaltung
+            von Fertigungssystemen in der hochiterativen Produktentwicklung.
+        </h3>
+    </div>
+    <!--Inhalt------------------------------------------------------------------------------------------------------------->
+    <div class="jumbotron2 text-white p-5">
+        <h4>{{data.name}}</h4>
+        <details>
+            <summary>Kontur</summary>
+            <ul>
+                <li>Breite: {{data.width}}</li>
+                <li>Höhe: {{data.height}}</li>
+                <li>Länge: {{data.length}}</li>
+                <li>Rauheit: {{data.roughness}}</li>
+
+            </ul>
+        </details>
+        <details>
+            <summary>Bohrung</summary>
+            <ul>
+                <li>Durchmesser: {{data.diameter}}</li>
+            </ul>
+        </details>
+        <a class="btn btn-outline-dark" href="/main/update/{{data.id}}" role="button">Werte Bearbeiten</a>
+        <a class="btn btn-outline-dark" align="center" href="/export">Download</a>
+
+    </div>
+    <!--ende Inhalt-->
+
+    <a class="btn btn-primary btn-lg" href="{{url_for('main.system')}}" role="button">Weiter</a>
+</div>
+{% endblock %}

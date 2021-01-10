@@ -1,0 +1,87 @@
+{% extends 'base.html' %} {% block content %}
+<style>
+  .jumbotron {
+    background-color: rgba(0, 84, 159, 0.5);
+    border-radius: 4px;
+  }
+
+  .jumbotron2 {
+    background-color: rgba(117, 169, 214, 0.8);
+    border-radius: 4px;
+  }
+
+  .jumbotron3 {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    color: rgba(0, 84, 159, 1);
+  }
+
+  .jumbotron4 {
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 4px;
+    color: rgba(0, 84, 159, 1);
+  }
+</style>
+
+<div class="container ">
+  <div class="jumbotron row">
+    <div class="container text-white text-center">
+      <h2 class="display-4 text-center pb-5">
+        Technologieplanung der Fertigungstechnik
+      </h2>
+    </div>
+    <div class="container text-white">
+      <div class="jumbotron3 text-blue">
+        <h3 class="p-3 p-sm-5">
+          WebApplikation zur teilautomatisierten Bewertung technologischer und
+          wirtschaftlicher Auswvon Engineering Change Requests bei der
+          Gestaltung von Fertigungssystemen in der hochiterativen
+          Produktentwicklung.
+        </h3>
+      </div>
+    </div>
+  </div>
+  <div class="jumbotron4 row ">
+    <div class="col-sm-6">
+      <div class="jumbotron3">
+        <div class="card-body">
+          <h5 class="card-title">Einloggen</h5>
+          <p class="card-text">
+            Hier gehts zum Login Hier gehts zum LoginHier gehts zum Login Hier gehts zum Login Hier
+            gehts zum Login Hier Hier gehts zum Login Hier gehts zum Login Hier gehts zum LoginHier gehts zum Login Hier
+            geht
+          </p>
+          <a class="btn btn-secondary" href="{{ url_for('auth.register') }}">Registrieren</a>
+          {% include "./forms/auth/LoginForm.html" %}
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="jumbotron3">
+        <div class="card-body">
+          <h5 class="card-title">Ansprechpartner</h5>
+          <p class="card-text">
+          <p>
+            <b>Sebastian Apelt, M. Sc. RWTH</b>
+            Research Associate<br />
+            Laboratory for Machine Tools and Production Engineering <br />
+            WZL of RWTH Aachen University<br />
+            Chair of Manufacturing Technology<br />
+            Department Technology Planning<br />
+          </p>
+          <p>
+            Production Engineering Cluster<br />
+            Campus-Boulevard 30<br />
+            52074 Aachen | GERMANY<br />
+            Tel.: +49 241 80-28004<br />
+            Fax: +49 241 80-22293<br />
+            s.apelt@wzl.rwth-aachen.de<br />
+            www.wzl.rwth-aachen.de
+          </p>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

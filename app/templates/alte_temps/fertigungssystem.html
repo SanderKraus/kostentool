@@ -1,0 +1,195 @@
+{% extends 'base.html' %} {% block title %}HOME{% endblock %} {% block content
+    %}
+<style>
+    .jumbotron {
+        background-color: rgba(0, 84, 159, 0.5);
+        border-radius: 4px;
+    }
+</style>
+<style>
+    .jumbotron2 {
+        background-color: rgba(117, 169, 214, 0.8);
+        border-radius: 4px;
+    }
+</style>
+<div class="jumbotron text-white">
+    <h2 class="display-2">Fertigungssystem</h2>
+    <div class="jumbotron2 text-white">
+        <h3 class="display-4 p-5">
+            Web-Application zur teilautomatisierten Bewertung
+            technologischer und wirtschaftlicher Auswirkungen
+            von Engineering Change Requests bei der Gestaltung
+            von Fertigungssystemen in der hochiterativen Produktentwicklung.
+        </h3>
+    </div>
+    <div id="jumbotron2 text-white p-5">
+        {% for ft in ft %}
+
+        <select class="FS" name="ft">
+            <optgroup label="Aktuelle Fertigungstechnologie">
+                <option>{{ft.name}}</option>
+
+            </optgroup>
+            <optgroup label="Altrnative Fertigungstechnologie">
+
+                <option></option>
+
+            </optgroup>
+        </select>
+
+
+        <font size="16"></font>
+        {% endfor %}
+        <br>
+        <!--<input type="button" class="button" name="button" value="Fertigungssystem bearbeiten" onclick="window.open(' / ', 'einNeuesFenster');" />-->
+        <br>
+        <input type="button" class="button" name="button" value="Neue Fertigungstechnologie hinzufügen"
+            onclick="window.open(' /neue_technologie ', 'einNeuesFenster');">
+        <br>
+        <input type="button" class="button" name="button" value="Neue Alternativtechnologie hinzufügen"
+            onclick="window.open(' /neue_alttechnologie ', 'einNeuesFenster');">
+        <h2>Datenbank der Fertigungstechnologien</h2>
+        {% for ft in ft %}
+
+
+        <!--Dantenbank der Fertigungstechnologien------------------------------------------------------------------->
+        <div class="Architektur">
+            <details>
+                <summary>{{ft.name}} <a id="FTLoeschen" href="/delete/{{ft.id}}">Löschen</a> <a id="FTBearbeiten"
+                        href="/ftbearbeiten/{{ft.id}}">Bearbeiten</a> <a id="FTPosition"
+                        href="/position/{{ft.id}}">Position</a></summary>
+
+                <ul>
+                    <table class="FTdaten" border="0">
+                        <thead>
+                            <tr>
+                                <th> </th>
+                                <th>a</th>
+                                <th>b</th>
+                                <th>c</th>
+                                <th>d</th>
+                            </tr>
+                            <tr>
+                                <th>Max. Bearbeitungsweg in x</th>
+                                <td>{{ft.max_machining_path_x_a}}</td>
+                                <td>{{ft.max_machining_path_x_b}}</td>
+                                <td>{{ft.max_machining_path_x_c}}</td>
+                                <td>{{ft.max_machining_path_x_d}}</td>
+                            </tr>
+                            <tr>
+                                <th>Max. Bearbeitungsweg in y</th>
+                                <td>{{ft.max_machining_path_y_a}}</td>
+                                <td>{{ft.max_machining_path_y_b}}</td>
+                                <td>{{ft.max_machining_path_y_c}}</td>
+                                <td>{{ft.max_machining_path_y_d}}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Max. Bearbeitungsweg in z</th>
+                                <td>{{ft.max_machining_path_z_a}}</td>
+                                <td>{{ft.max_machining_path_z_b}}</td>
+                                <td>{{ft.max_machining_path_z_c}}</td>
+                                <td>{{ft.max_machining_path_z_d}}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Formtoleranz</th>
+                                <td>{{ft.shape_tolerance_a}}</td>
+                                <td>{{ft.shape_tolerance_b}}</td>
+                                <td>{{ft.shape_tolerance_c}}</td>
+                                <td>{{ft.shape_tolerance_d}}</td>
+                            </tr>
+                            <tr>
+                                <th>Rauheit</th>
+                                <td>{{ft.roughness_a}}</td>
+                                <td>{{ft.roughness_b}}</td>
+                                <td>{{ft.roughness_c}}</td>
+                                <td>{{ft.roughness_d}}</td>
+                            </tr>
+                        </thead>
+
+                    </table>
+
+                </ul>
+            </details>
+        </div>
+        {% endfor %}
+        {% for altft in altft %}
+
+
+        <!--Dantenbank der Fertigungstechnologien------------------------------------------------------------------->
+        <div class="Architektur">
+            <details>
+                <summary>{{altft.name}} <a id="FTLoeschen" href="/delete/{{altft.id}}">Löschen</a> <a id="FTBearbeiten"
+                        href="/ftbearbeiten/{{altft.id}}">Bearbeiten</a></summary>
+
+                <ul>
+                    <table class="FTdaten" border="0">
+                        <thead>
+                            <tr>
+                                <th> </th>
+                                <th>a</th>
+                                <th>b</th>
+                                <th>c</th>
+                                <th>d</th>
+                            </tr>
+                            <tr>
+                                <th>Max. Bearbeitungsweg in x</th>
+                                <td>{{altft.max_machining_path_x_a}}</td>
+                                <td>{{altft.max_machining_path_x_b}}</td>
+                                <td>{{altft.max_machining_path_x_c}}</td>
+                                <td>{{altft.max_machining_path_x_d}}</td>
+                            </tr>
+                            <tr>
+                                <th>Max. Bearbeitungsweg in y</th>
+                                <td>{{altft.max_machining_path_y_a}}</td>
+                                <td>{{altft.max_machining_path_y_b}}</td>
+                                <td>{{altft.max_machining_path_y_c}}</td>
+                                <td>{{altft.max_machining_path_y_d}}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Max. Bearbeitungsweg in z</th>
+                                <td>{{altft.max_machining_path_z_a}}</td>
+                                <td>{{altft.max_machining_path_z_b}}</td>
+                                <td>{{altft.max_machining_path_z_c}}</td>
+                                <td>{{altft.max_machining_path_z_d}}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Formtoleranz</th>
+                                <td>{{altft.shape_tolerance_a}}</td>
+                                <td>{{altft.shape_tolerance_b}}</td>
+                                <td>{{altft.shape_tolerance_c}}</td>
+                                <td>{{altft.shape_tolerance_d}}</td>
+                            </tr>
+                            <tr>
+                                <th>Rauheit</th>
+                                <td>{{altft.roughness_a}}</td>
+                                <td>{{altft.roughness_b}}</td>
+                                <td>{{altft.roughness_c}}</td>
+                                <td>{{altft.roughness_d}}</td>
+                            </tr>
+                        </thead>
+
+                    </table>
+
+                </ul>
+            </details>
+        </div>
+        {% endfor %}
+
+
+        <input type="button" class="uploadebutton" name="back" value="Eingabe bestätigen"
+            onclick="window.open(' / ', 'einNeuesFenster');" />
+
+
+
+
+    </div>
+
+    <!--ende Inhalt-->
+    <a class="btn btn-primary btn-lg" href="{{url_for('main.system')}}" role="button">Weiter</a>
+
+</div>
+{% endblock %}

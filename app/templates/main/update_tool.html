@@ -1,0 +1,88 @@
+{% extends 'base.html' %} {% block content %}
+<style>
+  .container-wrapper {
+    background-color: rgba(0, 84, 159, 0.5);
+    border-radius: 4px;
+  }
+
+  .table-container {
+    background-color: white;
+    border-radius: 4px;
+  }
+  .form-group input {
+    width: 250px;
+  }
+  table input {
+    width: 50px;
+  }
+</style>
+<div class="container container-wrapper">
+  <div class="row text-white">
+    <div class="col">
+      <h2 class="">Produktarchitektur</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 p-4">
+      <div class="table-container">
+        <form method="POST">
+
+          <div class="px-5 pt-5 pb-4">
+            <h3>Werte von "{{tool.name}}" aktualisieren</h3>
+            <div class="form-group my-4 py-4">
+            </div>
+              <form action="/main/update_tool/{{tool.id}}" method="POST" align="center">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Kraft</th>
+                  <th>Breite</th>
+                  <th>Höhe</th>
+                  <th>Länge</th>
+                  <th>Rauheit</th>
+                  <th>Durchmesser</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+
+                  <td><input type="text" name="content1" id="content1" value="{{tool.force}}" required></td>
+                  <td><input type="text" name="content2" id="content2" value="{{tool.width}}" required></td>
+                  <td><input type="text" name="content3" id="content3" value="{{tool.height}}" required></td>
+                  <td><input type="text" name="content4" id="content4" value="{{tool.length}}" required></td>
+                  <td><input type="text" name="content5" id="content5" value="{{tool.roughness}}" required></td>
+                  <td><input type="text" name="content6" id="content6" value="{{tool.diameter}}" required></td>
+
+                </tr>
+              </tbody>
+            </table>
+            <div class="row">
+              <div class="btn-group">
+                <a
+                  href="{{url_for('main.index')}}"
+                  class="btn btn-secondary mt-4"
+                  >Abbrechen</a
+                >
+                <button class="btn btn-primary mt-4" type="submit">
+                  Änderung speichern
+                </button>
+              </div>
+              <form
+                class="align-self-end"
+                action="{{url_for('main.delete_tool', id=tool.id)}}"
+                method="POST"
+              >
+                <input
+                  type="submit"
+                  value="Eintrag Löschen"
+                  class="btn btn-danger mt-4 ml-auto"
+                />
+              </form>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

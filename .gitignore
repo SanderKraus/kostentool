@@ -1,0 +1,9 @@
+venv
+old
+__pycache__
+.DS_Store
+
+# For Development | activate in Production
+migrations
+
+# Database

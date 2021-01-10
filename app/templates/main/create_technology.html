@@ -1,0 +1,160 @@
+{% extends 'base.html' %} {% block content %}
+<style>
+  .container-wrapper {
+    background-color: rgba(0, 84, 159, 0.5);
+    border-radius: 4px;
+  }
+
+  .table-container {
+    background-color: white;
+    border-radius: 4px;
+  }
+
+  .input-container {
+    background-color: white;
+    border-radius: 4px;
+  }
+
+  .form-group input {
+    width: auto;
+  }
+
+  table input {
+    width: 25px;
+  }
+
+  .jumbotron {
+    background-color: rgba(0, 84, 159, 0.5);
+    border-radius: 4px;
+  }
+
+  .jumbotron2 {
+    background-color: rgba(117, 169, 214, 0.8);
+    border-radius: 4px;
+  }
+
+  .jumbotron3 {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    color: rgba(0, 84, 159, 1);
+  }
+
+  .jumbotron4 {
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 4px;
+    color: rgba(0, 84, 159, 1);
+  }
+</style>
+
+<body>
+  <div class="container">
+    <div class="jumbotron row">
+      <div class="container text-white text-center">
+        <h2 class="display-4 text-center pb-5">
+          Neue Technologie hinzufügen
+        </h2>
+      </div>
+      <div class="container text-white">
+        <div class="jumbotron3 text-blue">
+          <h3 class="p-3 p-sm-5">
+            Neue Technologie hinzufügen
+          </h3>
+
+
+
+          <form action="/main/create_technology" method="POST" align="center">
+            <input type="submit" class="btn btn-secondary p-3" value="Technologie hinzufügen">
+            <table class="table table-hover" border="3" align="center">
+              <tr>
+                <th>Technologie: <input class="form-control" type="text" id="c00" name="c00" required> </th>
+                <th>a</th>
+                <th>b</th>
+                <th>c</th>
+                <th>d</th>
+              </tr>
+              <tr>
+                <th>Max. Bearbeitungsweg in x</th>
+                <th><input type="text" name="c11" required></th>
+                <th><input type="text" name="c12" required></th>
+                <th><input type="text" name="c13" required></th>
+                <th><input type="text" name="c14" required></th>
+              </tr>
+              <tr>
+                <th>Max. Bearbeitungsweg in y</th>
+                <th><input type="text" name="c21" required></th>
+                <th><input type="text" name="c22" required></th>
+                <th><input type="text" name="c23" required></th>
+                <th><input type="text" name="c24" required></th>
+              </tr>
+              <tr>
+                <th>Max. Bearbeitungsweg in z</th>
+                <th><input type="text" name="c31" required></th>
+                <th><input type="text" name="c32" required></th>
+                <th><input type="text" name="c33" required></th>
+                <th><input type="text" name="c34" required></th>
+              </tr>
+              <tr>
+                <th>Formtoleranz</th>
+                <th><input type="text" name="c41" required></th>
+                <th><input type="text" name="c42" required></th>
+                <th><input type="text" name="c43" required></th>
+                <th><input type="text" name="c44" required></th>
+              </tr>
+              <tr>
+                <th>Rauheit</th>
+                <th><input type="text" name="c51" required></th>
+                <th><input type="text" name="c52" required></th>
+                <th><input type="text" name="c53" required></th>
+                <th><input type="text" name="c54" required></th>
+              </tr>
+
+            </table>
+            Position im Fertigungssystem:<input type="text" name="position" required>
+            <br>
+
+
+
+            <table class="table table-hover" border="3" align="center">
+              <tr>
+                <th>Kontur (Feature 1)</th>
+                <th>Input</th>
+                <th>Output</th>
+
+              </tr>
+              <tr>
+                <th>Länge</th>
+                <td><input type="text" name="input1">[mm]</td>
+                <td><input type="text" name="check1">[mm]</td>
+              </tr>
+              <tr>
+                <th>Breite</th>
+                <td><input type="text" name="input2">[mm]</td>
+                <td><input type="text" name="check2">[mm]</td>
+              </tr>
+              <tr>
+                <th>Höhe</th>
+                <td><input type="text" name="input3">[mm]</td>
+                <td><input type="text" name="check3">[mm]</td>
+              </tr>
+              <tr>
+                <th>Rauheit</th>
+                <td><input type="text" name="input4">[µm]</td>
+                <td><input type="text" name="check4">[µm]</td>
+              </tr>
+              <tr>
+                <th>Bohrung (Feature 2)</th>
+                <th>Input</th>
+                <th>Output</th>
+
+              </tr>
+              <tr>
+                <th>Durchmesser</th>
+                <td><input type="text" name="input5">[mm]</td>
+                <td><input type="text" name="check5">[mm]</td>
+              </tr>
+            </table>
+          </form>
+        </div>
+      </div>
+</body>
+{% endblock %}

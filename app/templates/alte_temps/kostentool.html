@@ -1,0 +1,24 @@
+{% extends 'base.html' %} {% block title %}HOME{% endblock %} {% block content
+    %}
+<style>
+    .jumbotron {
+        background-color: rgba(0, 84, 159, 0.5);
+        border-radius: 4px;
+    }
+</style>
+<style>
+    .jumbotron2 {
+        background-color: rgba(117, 169, 214, 0.8);
+        border-radius: 4px;
+    }
+</style>
+<div class="jumbotron text-white">
+    <h2 class="display-2">Kostentool</h2>
+    <div class="jumbotron2 text-white p-5">
+        <h4 class="p-1">Fräsen : {{K_F * V}}€</h4>
+        <h4 class="p-1">Schleifen : {{K_S * V}}€</h4>
+        <h2 class="p-1">Fertigungskosten : {{K_S * V + K_F * V}}€</h2>
+    </div>
+    <a class="btn btn-primary btn-lg" href="{{url_for('main.tool')}}" role="button">Weiter</a>
+</div>
+{% endblock %}
