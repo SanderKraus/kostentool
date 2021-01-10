@@ -437,6 +437,7 @@ def processData(request):
     # init data frame
     df = pd.read_excel(file.read(), header=1, usecols="B:ZZZZZ")
     df = df.loc[:, ~df.columns.str.contains("^Unnamed")]
+    df.dropna(subset=["Name"], inplace=True)
 
     # extract header and types
     header = df.columns.values.tolist()
