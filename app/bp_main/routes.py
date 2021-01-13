@@ -59,6 +59,15 @@ def seed():
 #
 #  Business-Logic: Technologiekette modellieren
 #
+# ------------------------------------------------------- Cost
+@main.route("/cost", methods=['GET', 'POST'])
+def cost():
+    conn = sqlite3.connect('app.db')
+    cur = conn.cursor(conn)
+    cur.execute("select * from FCT limit 10;")
+    results = cur.fetchall()
+    print(results)
+    return "-"
 
 
 @main.route("/ft", methods=['GET', 'POST'])
