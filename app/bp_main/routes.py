@@ -1,15 +1,14 @@
 from app import db
 from flask_login import login_required
 import pandas as pd
+import numpy as np
 import sqlite3
-from flask import (
-    Blueprint, flash, redirect, render_template, request, url_for
-)
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from app.bp_main.forms import UploadForm, TechnologyForm, ToolForm
 from app.models import Tool, Technology, FCT
 
-main = Blueprint('main', __name__, url_prefix='/main')
+main = Blueprint("main", __name__, url_prefix="/main")
 
 
 @main.before_request
@@ -18,8 +17,8 @@ def login_required_for_all_request():
     pass
 
 
-@main.route('/')
-@main.route('/index', methods=["GET", "POST"])
+@main.route("/")
+@main.route("/index", methods=["GET", "POST"])
 def index():
     """
     1. Hompage für eingelogte User
@@ -41,7 +40,14 @@ def index():
         show = False
         data = None
         columns = None
-    return render_template('main/dashboard.html', tools=tools, techs=techs, show=show, data=data, column_names=columns)
+    return render_template(
+        "main/dashboard.html",
+        tools=tools,
+        techs=techs,
+        show=show,
+        data=data,
+        column_names=columns,
+    )
 
 
 @main.route("/seed")
@@ -56,36 +62,72 @@ def seed():
     except Exception as err:
         return str(err)
 
+
 #
 #  Business-Logic: Technologiekette modellieren
 #
+
+
 # ------------------------------------------------------- Cost
-@main.route("/cost", methods=['GET', 'POST'])
+@main.route("/cost", methods=["GET", "POST"])
 def cost():
-    conn = sqlite3.connect('app.db')
-    cur = conn.cursor(conn)
-    cur.execute("select * from FCT limit 10;")
-    results = cur.fetchall()
-    print(results)
-    return "-"
+    tool = Tool.query.first()
+    conn = sqlite3.connect("app.db")
+    cur = conn.cursor()
+
+    cursor_dat = cur.execute("SELECT * FROM FCT")
+    columns = [col[0] for col in cursor_dat.description]  # Liste alle Variablennamen
+
+    data = pd.DataFrame.from_records(cursor_dat.fetchall(), columns=columns)
+
+    # alle Zeilen löschen, die keine Position haben
+    x = data["position"] != ""
+    y = data[x]
+    dataft = y.sort_values(by="position", ascending=True)
+    print(dataft)
+
+    names = dataft["name"]
+
+    print(names)
+
+    tables = dataft.to_html(classes="dataft")
+    titles = dataft.columns.values
+
+    return render_template(
+        "main/costs.html",
+        dataft=dataft,
+        names=names,
+        data=data,
+        tables=tables,
+        titles=titles,
+        tool=tool,
+    )
 
 
-@main.route("/ft", methods=['GET', 'POST'])
+# ----------------------------------------------------------------cost end--------------------------------------------------------------
+
+
+@main.route("/ft", methods=["GET", "POST"])
 def ft():
 
     technology = Technology.query.order_by(Technology.position).all()
     tool = Tool.query.first()
     if Tool.query.count() == 2:
-        tool_roghness_old = Tool.query.get_or_404(
-            2).roughness.replace(" µm", "").replace(",", ".")
-        tool_diameter_old = Tool.query.get_or_404(
-            2).diameter.replace(" m", "").replace(",", ".")
-        tool_width_old = Tool.query.get_or_404(
-            2).width.replace(" m", "").replace(",", ".")
-        tool_height_old = Tool.query.get_or_404(
-            2).height.replace(" m", "").replace(",", ".")
-        tool_length_old = Tool.query.get_or_404(
-            2).length.replace(" m", "").replace(",", ".")
+        tool_roghness_old = (
+            Tool.query.get_or_404(2).roughness.replace(" µm", "").replace(",", ".")
+        )
+        tool_diameter_old = (
+            Tool.query.get_or_404(2).diameter.replace(" m", "").replace(",", ".")
+        )
+        tool_width_old = (
+            Tool.query.get_or_404(2).width.replace(" m", "").replace(",", ".")
+        )
+        tool_height_old = (
+            Tool.query.get_or_404(2).height.replace(" m", "").replace(",", ".")
+        )
+        tool_length_old = (
+            Tool.query.get_or_404(2).length.replace(" m", "").replace(",", ".")
+        )
     else:
         tool_roghness_old = tool.roughness.replace(" µm", "").replace(",", ".")
         tool_diameter_old = tool.diameter.replace(" m", "").replace(",", ".")
@@ -93,57 +135,67 @@ def ft():
         tool_height_old = tool.height.replace(" m", "").replace(",", ".")
         tool_length_old = tool.length.replace(" m", "").replace(",", ".")
 
-    fct = FCT.query.filter_by(alttechnologie='N').order_by(FCT.position).all()
-    techs = Technology.query.filter_by(
-        alttechnologie='N').order_by(Technology.position).all()
-    alttech = Technology.query.filter_by(
-        alttechnologie='Y').order_by(Technology.position).all()
-    produktanforderung_rauheit = tool.roughness.replace(
-        " µm", "").replace(",", ".")
-    produktanforderung_durchmesser = tool.diameter.replace(
-        " m", "").replace(",", ".")
+    fct = FCT.query.filter_by(alttechnologie="N").order_by(FCT.position).all()
+    techs = (
+        Technology.query.filter_by(alttechnologie="N")
+        .order_by(Technology.position)
+        .all()
+    )
+    alttech = (
+        Technology.query.filter_by(alttechnologie="Y")
+        .order_by(Technology.position)
+        .all()
+    )
+    produktanforderung_rauheit = tool.roughness.replace(" µm", "").replace(",", ".")
+    produktanforderung_durchmesser = tool.diameter.replace(" m", "").replace(",", ".")
     produktanforderung_laenge = tool.length.replace(" m", "").replace(",", ".")
     produktanforderung_hoehe = tool.height.replace(" m", "").replace(",", ".")
     produktanforderung_breite = tool.width.replace(" m", "").replace(",", ".")
-    breite = ''
-    rauheit = ''
-    hoehe = ''
-    durchmesser = ''
-    laenge = ''
+    breite = ""
+    rauheit = ""
+    hoehe = ""
+    durchmesser = ""
+    laenge = ""
 
-    for i in range(1, FCT.query.filter_by(alttechnologie='N').count()+1):
-        fctn = FCT.query.filter_by(position=''+str(i)).first()
-        if not fctn.breite == '':
+    for i in range(1, FCT.query.filter_by(alttechnologie="N").count() + 1):
+        fctn = FCT.query.filter_by(position="" + str(i)).first()
+        if not fctn.breite == "":
             breite = round(float(str(fctn.breite).replace(",", ".")), 2)
 
-        if not fctn.laenge == '':
+        if not fctn.laenge == "":
             laenge = round(float(str(fctn.laenge).replace(",", ".")), 2)
 
-        if not fctn.hoehe == '':
+        if not fctn.hoehe == "":
             hoehe = round(float(str(fctn.hoehe).replace(",", ".")), 2)
 
-        if not fctn.rauheit == '':
+        if not fctn.rauheit == "":
             rauheit = round(float(str(fctn.rauheit).replace(",", ".")), 2)
 
-        if not fctn.durchmesser == '':
-            durchmesser = round(
-                float(str(fctn.durchmesser).replace(",", ".")), 2)
+        if not fctn.durchmesser == "":
+            durchmesser = round(float(str(fctn.durchmesser).replace(",", ".")), 2)
     print(rauheit)
     print(produktanforderung_rauheit)
 
-# -----------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------
     if not rauheit == float(produktanforderung_rauheit):
         x = 1
         j = 1
         # von oben runter zählen
-        for i in range(FCT.query.filter_by(alttechnologie='N').count() + 0, 0, -1):
-            fctn = FCT.query.filter_by(position='' + str(i)).first()
+        for i in range(FCT.query.filter_by(alttechnologie="N").count() + 0, 0, -1):
+            fctn = FCT.query.filter_by(position="" + str(i)).first()
             alttechs = Technology.query.filter_by(verknüpfung=fctn.id).all()
 
-            if not fctn.rauheit == '' and j == 1 and x == 0:
+            if not fctn.rauheit == "" and j == 1 and x == 0:
 
-                rauheit = str(round(float(str(fctn.rauheit).replace(
-                    ",", ".")) - (float(tool_roghness_old) - float(produktanforderung_rauheit)), 2))
+                rauheit = str(
+                    round(
+                        float(str(fctn.rauheit).replace(",", "."))
+                        - (
+                            float(tool_roghness_old) - float(produktanforderung_rauheit)
+                        ),
+                        2,
+                    )
+                )
                 fctn.rauheit = rauheit.replace(".", ",")
                 for z in alttechs:
                     fct_alttech = FCT.query.get_or_404(z.id)
@@ -154,7 +206,9 @@ def ft():
                 j = 0
 
                 db.session.commit()
-            if not fctn.rauheit == '' and x == 1:  # x ist ein Schalter, sodass immer direkt das erste Merkmal geändert wird und nicht die weiteren danach
+            if (
+                not fctn.rauheit == "" and x == 1
+            ):  # x ist ein Schalter, sodass immer direkt das erste Merkmal geändert wird und nicht die weiteren danach
 
                 fctn.rauheit = produktanforderung_rauheit
                 for z in alttechs:
@@ -167,13 +221,21 @@ def ft():
         x = 1
         j = 1
         # von oben runter zählen
-        for i in range(FCT.query.filter_by(alttechnologie='N').count() + 0, 0, -1):
-            fctn = FCT.query.filter_by(position='' + str(i)).first()
+        for i in range(FCT.query.filter_by(alttechnologie="N").count() + 0, 0, -1):
+            fctn = FCT.query.filter_by(position="" + str(i)).first()
             alttechs = Technology.query.filter_by(verknüpfung=fctn.id).all()
-            if not fctn.durchmesser == '' and j == 1 and x == 0:
+            if not fctn.durchmesser == "" and j == 1 and x == 0:
 
-                durchmesser = str(round(float(str(fctn.durchmesser).replace(
-                    ",", ".")) - (float(tool_diameter_old) - float(produktanforderung_durchmesser)), 2))
+                durchmesser = str(
+                    round(
+                        float(str(fctn.durchmesser).replace(",", "."))
+                        - (
+                            float(tool_diameter_old)
+                            - float(produktanforderung_durchmesser)
+                        ),
+                        2,
+                    )
+                )
                 fctn.durchmesser = durchmesser.replace(".", ",")
                 for z in alttechs:
                     fct_alttech = FCT.query.get_or_404(z.id)
@@ -184,8 +246,8 @@ def ft():
 
                 db.session.commit()
             # x ist ein Schalter, sodass immer direkt das erste Merkmal geändert wird und nicht die weiteren danach
-            if not fctn.durchmesser == '' and x == 1:
-                #flash("Bitte" + fctn.name + "überprüfen!")
+            if not fctn.durchmesser == "" and x == 1:
+                # flash("Bitte" + fctn.name + "überprüfen!")
                 fctn.durchmesser = produktanforderung_durchmesser
                 for z in alttechs:
                     fct_alttech = FCT.query.get_or_404(z.id)
@@ -197,13 +259,18 @@ def ft():
         x = 1
         j = 1
         # von oben runter zählen
-        for i in range(FCT.query.filter_by(alttechnologie='N').count() + 0, 0, -1):
-            fctn = FCT.query.filter_by(position='' + str(i)).first()
+        for i in range(FCT.query.filter_by(alttechnologie="N").count() + 0, 0, -1):
+            fctn = FCT.query.filter_by(position="" + str(i)).first()
             alttechs = Technology.query.filter_by(verknüpfung=fctn.id).all()
-            if not fctn.hoehe == '' and j == 1 and x == 0:
+            if not fctn.hoehe == "" and j == 1 and x == 0:
 
-                hoehe = str(round(float(str(fctn.hoehe).replace(
-                    ",", ".")) - (float(tool_height_old) - float(produktanforderung_hoehe)), 2))
+                hoehe = str(
+                    round(
+                        float(str(fctn.hoehe).replace(",", "."))
+                        - (float(tool_height_old) - float(produktanforderung_hoehe)),
+                        2,
+                    )
+                )
                 fctn.hoehe = hoehe.replace(".", ",")
                 for z in alttechs:
                     fct_alttech = FCT.query.get_or_404(z.id)
@@ -213,8 +280,10 @@ def ft():
                 j = 0
 
                 db.session.commit()
-            if not fctn.hoehe == '' and x == 1:  # x ist ein Schalter, sodass immer direkt das erste Merkmal geändert wird und nicht die weiteren danach
-                #flash("Bitte" + fctn.name + "überprüfen!")
+            if (
+                not fctn.hoehe == "" and x == 1
+            ):  # x ist ein Schalter, sodass immer direkt das erste Merkmal geändert wird und nicht die weiteren danach
+                # flash("Bitte" + fctn.name + "überprüfen!")
                 fctn.hoehe = produktanforderung_hoehe
                 for z in alttechs:
                     fct_alttech = FCT.query.get_or_404(z.id)
@@ -226,13 +295,18 @@ def ft():
         x = 1
         j = 1
         # von oben runter zählen
-        for i in range(FCT.query.filter_by(alttechnologie='N').count() + 0, 0, -1):
-            fctn = FCT.query.filter_by(position='' + str(i)).first()
+        for i in range(FCT.query.filter_by(alttechnologie="N").count() + 0, 0, -1):
+            fctn = FCT.query.filter_by(position="" + str(i)).first()
             alttechs = Technology.query.filter_by(verknüpfung=fctn.id).all()
-            if not fctn.breite == '' and j == 1 and x == 0:
+            if not fctn.breite == "" and j == 1 and x == 0:
 
-                breite = str(round(float(str(fctn.breite).replace(
-                    ",", ".")) - (float(tool_width_old) - float(produktanforderung_breite)), 2))
+                breite = str(
+                    round(
+                        float(str(fctn.breite).replace(",", "."))
+                        - (float(tool_width_old) - float(produktanforderung_breite)),
+                        2,
+                    )
+                )
                 fctn.breite = breite.replace(".", ",")
                 for z in alttechs:
                     fct_alttech = FCT.query.get_or_404(z.id)
@@ -242,8 +316,10 @@ def ft():
                 j = 0
 
                 db.session.commit()
-            if not fctn.breite == '' and x == 1:  # x ist ein Schalter, sodass immer direkt das erste Merkmal geändert wird und nicht die weiteren danach
-                #flash("Bitte" + fctn.name + "überprüfen!")
+            if (
+                not fctn.breite == "" and x == 1
+            ):  # x ist ein Schalter, sodass immer direkt das erste Merkmal geändert wird und nicht die weiteren danach
+                # flash("Bitte" + fctn.name + "überprüfen!")
                 fctn.breite = produktanforderung_breite
                 for z in alttechs:
                     fct_alttech = FCT.query.get_or_404(z.id)
@@ -255,13 +331,18 @@ def ft():
         x = 1
         j = 1
         # von oben runter zählen
-        for i in range(FCT.query.filter_by(alttechnologie='N').count() + 0, 0, -1):
-            fctn = FCT.query.filter_by(position='' + str(i)).first()
+        for i in range(FCT.query.filter_by(alttechnologie="N").count() + 0, 0, -1):
+            fctn = FCT.query.filter_by(position="" + str(i)).first()
             alttechs = Technology.query.filter_by(verknüpfung=fctn.id).all()
-            if not fctn.laenge == '' and j == 1 and x == 0:
+            if not fctn.laenge == "" and j == 1 and x == 0:
 
-                laenge = str(round(float(str(fctn.laenge).replace(
-                    ",", ".")) - (float(tool_length_old) - float(produktanforderung_laenge)), 2))
+                laenge = str(
+                    round(
+                        float(str(fctn.laenge).replace(",", "."))
+                        - (float(tool_length_old) - float(produktanforderung_laenge)),
+                        2,
+                    )
+                )
                 fctn.laenge = laenge.replace(".", ",")
                 for z in alttechs:
                     fct_alttech = FCT.query.get_or_404(z.id)
@@ -271,8 +352,10 @@ def ft():
                 j = 0
 
                 db.session.commit()
-            if not fctn.laenge == '' and x == 1:  # x ist ein Schalter, sodass immer direkt das erste Merkmal geändert wird und nicht die weiteren danach
-                #flash("Bitte" + fctn.name + "überprüfen!")
+            if (
+                not fctn.laenge == "" and x == 1
+            ):  # x ist ein Schalter, sodass immer direkt das erste Merkmal geändert wird und nicht die weiteren danach
+                # flash("Bitte" + fctn.name + "überprüfen!")
                 fctn.laenge = produktanforderung_laenge
                 for z in alttechs:
                     fct_alttech = FCT.query.get_or_404(z.id)
@@ -280,28 +363,28 @@ def ft():
                 db.session.commit()
                 x = 0
 
-# ------------------FCT-Table aktualisieren--------------------------------------------------------
-    for i in range(1, FCT.query.filter_by(alttechnologie='N').count()+1):
-        fctn = FCT.query.filter_by(position=''+str(i)).first()
-        if not fctn.breite == '':
+    # ------------------FCT-Table aktualisieren--------------------------------------------------------
+    for i in range(1, FCT.query.filter_by(alttechnologie="N").count() + 1):
+        fctn = FCT.query.filter_by(position="" + str(i)).first()
+        if not fctn.breite == "":
             breite = fctn.breite
 
-        if not fctn.laenge == '':
+        if not fctn.laenge == "":
             laenge = fctn.laenge
 
-        if not fctn.hoehe == '':
+        if not fctn.hoehe == "":
             hoehe = fctn.hoehe
 
-        if not fctn.rauheit == '':
+        if not fctn.rauheit == "":
             rauheit = fctn.rauheit
 
-        if not fctn.durchmesser == '':
+        if not fctn.durchmesser == "":
             durchmesser = fctn.durchmesser
-# -----------------------------------------------------------------------------
-    for k in range(1, FCT.query.filter_by(alttechnologie='N').count()+1):
-        fctx = FCT.query.filter_by(position=''+str(k)).first()
+    # -----------------------------------------------------------------------------
+    for k in range(1, FCT.query.filter_by(alttechnologie="N").count() + 1):
+        fctx = FCT.query.filter_by(position="" + str(k)).first()
         if fctx.position > 1:
-            fctx_before = FCT.query.filter_by(position=''+str(k-1)).first()
+            fctx_before = FCT.query.filter_by(position="" + str(k - 1)).first()
             fctx.rauheit_ein = fctx_before.rauheit
 
             fctx.durchmesser_ein = fctx_before.durchmesser
@@ -310,9 +393,9 @@ def ft():
             fctx.laenge_ein = fctx_before.laenge
 
             db.session.commit()
-# -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
 
-    for j in range(1, FCT.query.count()+1):
+    for j in range(1, FCT.query.count() + 1):
 
         fct2 = FCT.query.get_or_404(j)
         if not fct2.rauheit == "":
@@ -324,100 +407,143 @@ def ft():
         if not fct2.laenge == "":
             laenge_bauteil = float(str(fct2.laenge).replace(",", "."))
         if not fct2.durchmesser == "":
-            durchmesser_bauteil = float(
-                str(fct2.durchmesser).replace(",", "."))
+            durchmesser_bauteil = float(str(fct2.durchmesser).replace(",", "."))
 
         ft = Technology.query.get_or_404(j)
         rauheit_a = float(str(ft.roughness_a).replace(",", "."))
         rauheit_b = float(str(ft.roughness_b).replace(",", "."))
         rauheit_c = float(str(ft.roughness_c).replace(",", "."))
         rauheit_d = float(str(ft.roughness_d).replace(",", "."))
-        maxbearbeitungswegx_a = float(
-            str(ft.max_machining_path_x_a).replace(",", "."))
-        maxbearbeitungswegx_b = float(
-            str(ft.max_machining_path_x_b).replace(",", "."))
-        maxbearbeitungswegx_c = float(
-            str(ft.max_machining_path_x_c).replace(",", "."))
-        maxbearbeitungswegx_d = float(
-            str(ft.max_machining_path_x_d).replace(",", "."))
-        maxbearbeitungswegy_a = float(
-            str(ft.max_machining_path_y_a).replace(",", "."))
-        maxbearbeitungswegy_b = float(
-            str(ft.max_machining_path_y_b).replace(",", "."))
-        maxbearbeitungswegy_c = float(
-            str(ft.max_machining_path_y_c).replace(",", "."))
-        maxbearbeitungswegy_d = float(
-            str(ft.max_machining_path_y_d).replace(",", "."))
-        maxbearbeitungswegz_a = float(
-            str(ft.max_machining_path_z_a).replace(",", "."))
-        maxbearbeitungswegz_b = float(
-            str(ft.max_machining_path_z_b).replace(",", "."))
-        maxbearbeitungswegz_c = float(
-            str(ft.max_machining_path_z_c).replace(",", "."))
-        maxbearbeitungswegz_d = float(
-            str(ft.max_machining_path_z_d).replace(",", "."))
+        maxbearbeitungswegx_a = float(str(ft.max_machining_path_x_a).replace(",", "."))
+        maxbearbeitungswegx_b = float(str(ft.max_machining_path_x_b).replace(",", "."))
+        maxbearbeitungswegx_c = float(str(ft.max_machining_path_x_c).replace(",", "."))
+        maxbearbeitungswegx_d = float(str(ft.max_machining_path_x_d).replace(",", "."))
+        maxbearbeitungswegy_a = float(str(ft.max_machining_path_y_a).replace(",", "."))
+        maxbearbeitungswegy_b = float(str(ft.max_machining_path_y_b).replace(",", "."))
+        maxbearbeitungswegy_c = float(str(ft.max_machining_path_y_c).replace(",", "."))
+        maxbearbeitungswegy_d = float(str(ft.max_machining_path_y_d).replace(",", "."))
+        maxbearbeitungswegz_a = float(str(ft.max_machining_path_z_a).replace(",", "."))
+        maxbearbeitungswegz_b = float(str(ft.max_machining_path_z_b).replace(",", "."))
+        maxbearbeitungswegz_c = float(str(ft.max_machining_path_z_c).replace(",", "."))
+        maxbearbeitungswegz_d = float(str(ft.max_machining_path_z_d).replace(",", "."))
         formtoleranz_a = float(str(ft.shape_tolerance_a).replace(",", "."))
         formtoleranz_b = float(str(ft.shape_tolerance_b).replace(",", "."))
         formtoleranz_c = float(str(ft.shape_tolerance_c).replace(",", "."))
         formtoleranz_d = float(str(ft.shape_tolerance_d).replace(",", "."))
 
-        fähigkeit_laenge = ''
-        fähigkeit_breite = ''
-        fähigkeit_hoehe = ''
-        fähigkeit_rauheit = ''
-        fähigkeit_durchmesser = ''
+        fähigkeit_laenge = ""
+        fähigkeit_breite = ""
+        fähigkeit_hoehe = ""
+        fähigkeit_rauheit = ""
+        fähigkeit_durchmesser = ""
 
-        if not fct2.laenge == '':
+        if not fct2.laenge == "":
             if maxbearbeitungswegx_b <= laenge_bauteil <= maxbearbeitungswegx_c:
-                fähigkeit_laenge = '2'
-            if maxbearbeitungswegx_a <= laenge_bauteil < maxbearbeitungswegx_b or maxbearbeitungswegx_c <= laenge_bauteil < maxbearbeitungswegx_d:
-                fähigkeit_laenge = '1'
-            if maxbearbeitungswegx_a > laenge_bauteil or maxbearbeitungswegx_d < laenge_bauteil:
-                fähigkeit_laenge = '0'
+                fähigkeit_laenge = "2"
+            if (
+                maxbearbeitungswegx_a <= laenge_bauteil < maxbearbeitungswegx_b
+                or maxbearbeitungswegx_c <= laenge_bauteil < maxbearbeitungswegx_d
+            ):
+                fähigkeit_laenge = "1"
+            if (
+                maxbearbeitungswegx_a > laenge_bauteil
+                or maxbearbeitungswegx_d < laenge_bauteil
+            ):
+                fähigkeit_laenge = "0"
 
-        if not fct2.breite == '':
+        if not fct2.breite == "":
             if maxbearbeitungswegy_b <= breite_bauteil <= maxbearbeitungswegy_c:
-                fähigkeit_breite = '2'
-            if maxbearbeitungswegy_a <= breite_bauteil < maxbearbeitungswegy_b or maxbearbeitungswegy_c <= breite_bauteil < maxbearbeitungswegy_d:
-                fähigkeit_breite = '1'
-            if maxbearbeitungswegy_a > breite_bauteil or maxbearbeitungswegy_d < breite_bauteil:
-                fähigkeit_breite = '0'
+                fähigkeit_breite = "2"
+            if (
+                maxbearbeitungswegy_a <= breite_bauteil < maxbearbeitungswegy_b
+                or maxbearbeitungswegy_c <= breite_bauteil < maxbearbeitungswegy_d
+            ):
+                fähigkeit_breite = "1"
+            if (
+                maxbearbeitungswegy_a > breite_bauteil
+                or maxbearbeitungswegy_d < breite_bauteil
+            ):
+                fähigkeit_breite = "0"
 
-        if not fct2.hoehe == '':
+        if not fct2.hoehe == "":
             if maxbearbeitungswegz_b <= hoehe_bauteil <= maxbearbeitungswegz_c:
-                fähigkeit_hoehe = '2'
-            if maxbearbeitungswegz_a <= hoehe_bauteil < maxbearbeitungswegz_b or maxbearbeitungswegz_c <= hoehe_bauteil < maxbearbeitungswegz_d:
-                fähigkeit_hoehe = '1'
-            if maxbearbeitungswegz_a > hoehe_bauteil or maxbearbeitungswegz_d < hoehe_bauteil:
-                fähigkeit_hoehe = '0'
+                fähigkeit_hoehe = "2"
+            if (
+                maxbearbeitungswegz_a <= hoehe_bauteil < maxbearbeitungswegz_b
+                or maxbearbeitungswegz_c <= hoehe_bauteil < maxbearbeitungswegz_d
+            ):
+                fähigkeit_hoehe = "1"
+            if (
+                maxbearbeitungswegz_a > hoehe_bauteil
+                or maxbearbeitungswegz_d < hoehe_bauteil
+            ):
+                fähigkeit_hoehe = "0"
 
-        if not fct2.rauheit == '':
+        if not fct2.rauheit == "":
             if rauheit_b <= rauheit_bauteil <= rauheit_c:
-                fähigkeit_rauheit = '2'
-            if rauheit_a <= rauheit_bauteil < rauheit_b or rauheit_c <= rauheit_bauteil < rauheit_d:
-                fähigkeit_rauheit = '1'
+                fähigkeit_rauheit = "2"
+            if (
+                rauheit_a <= rauheit_bauteil < rauheit_b
+                or rauheit_c <= rauheit_bauteil < rauheit_d
+            ):
+                fähigkeit_rauheit = "1"
             if rauheit_a > rauheit_bauteil or rauheit_d < rauheit_bauteil:
-                fähigkeit_rauheit = '0'
+                fähigkeit_rauheit = "0"
 
-        if not fct2.durchmesser == '':
+        if not fct2.durchmesser == "":
             if formtoleranz_b <= durchmesser_bauteil <= formtoleranz_c:
-                fähigkeit_durchmesser = '2'
-            if formtoleranz_a <= durchmesser_bauteil < formtoleranz_b or formtoleranz_c <= durchmesser_bauteil < formtoleranz_d:
-                fähigkeit_durchmesser = '1'
-            if formtoleranz_a > durchmesser_bauteil or formtoleranz_d < durchmesser_bauteil:
-                fähigkeit_durchmesser = '0'
+                fähigkeit_durchmesser = "2"
+            if (
+                formtoleranz_a <= durchmesser_bauteil < formtoleranz_b
+                or formtoleranz_c <= durchmesser_bauteil < formtoleranz_d
+            ):
+                fähigkeit_durchmesser = "1"
+            if (
+                formtoleranz_a > durchmesser_bauteil
+                or formtoleranz_d < durchmesser_bauteil
+            ):
+                fähigkeit_durchmesser = "0"
 
-        if fähigkeit_laenge == '2' or fähigkeit_hoehe == '2' or fähigkeit_breite == '2' or fähigkeit_rauheit == '2' or fähigkeit_durchmesser == '2':
-            ft.capability = '2'
-        if fähigkeit_laenge == '1' or fähigkeit_hoehe == '1' or fähigkeit_breite == '1' or fähigkeit_rauheit == '1' or fähigkeit_durchmesser == '1':
-            ft.capability = '1'
-        if fähigkeit_laenge == '0' or fähigkeit_hoehe == '0' or fähigkeit_breite == '0' or fähigkeit_rauheit == '0' or fähigkeit_durchmesser == '0':
-            ft.capability = '0'
+        if (
+            fähigkeit_laenge == "2"
+            or fähigkeit_hoehe == "2"
+            or fähigkeit_breite == "2"
+            or fähigkeit_rauheit == "2"
+            or fähigkeit_durchmesser == "2"
+        ):
+            ft.capability = "2"
+        if (
+            fähigkeit_laenge == "1"
+            or fähigkeit_hoehe == "1"
+            or fähigkeit_breite == "1"
+            or fähigkeit_rauheit == "1"
+            or fähigkeit_durchmesser == "1"
+        ):
+            ft.capability = "1"
+        if (
+            fähigkeit_laenge == "0"
+            or fähigkeit_hoehe == "0"
+            or fähigkeit_breite == "0"
+            or fähigkeit_rauheit == "0"
+            or fähigkeit_durchmesser == "0"
+        ):
+            ft.capability = "0"
 
         db.session.commit()
 
     return render_template(
-        "main/ft.html", technology=technology, tool=tool, techs=techs, alttech=alttech, fct=fct, breite=breite, rauheit=rauheit, durchmesser=durchmesser, hoehe=hoehe, laenge=laenge)
+        "main/ft.html",
+        technology=technology,
+        tool=tool,
+        techs=techs,
+        alttech=alttech,
+        fct=fct,
+        breite=breite,
+        rauheit=rauheit,
+        durchmesser=durchmesser,
+        hoehe=hoehe,
+        laenge=laenge,
+    )
 
 
 def readData():
@@ -458,7 +584,7 @@ def processData(request):
         if " : " in name:
             ind = name.index(" : ")
             h = name[0:ind]
-            u = name[ind + 3: len(name)]
+            u = name[ind + 3 : len(name)]
         header[i] = h
         units.append(u)
     df.columns = header
@@ -509,66 +635,106 @@ def processData(request):
 # Model Technology
 
 
-@main.route('/create_technology', methods=["GET", "POST"])
+@main.route("/create_technology", methods=["GET", "POST"])
 def create_technology():
-    if request.method == 'POST':
-        position = request.form['position']
-        name = request.form['c00']
-        max_machining_path_x_a = request.form['c11']
-        max_machining_path_x_b = request.form['c12']
-        max_machining_path_x_c = request.form['c13']
-        max_machining_path_x_d = request.form['c14']
-        max_machining_path_y_a = request.form['c21']
-        max_machining_path_y_b = request.form['c22']
-        max_machining_path_y_c = request.form['c23']
-        max_machining_path_y_d = request.form['c24']
-        max_machining_path_z_a = request.form['c31']
-        max_machining_path_z_b = request.form['c32']
-        max_machining_path_z_c = request.form['c33']
-        max_machining_path_z_d = request.form['c34']
-        shape_tolerance_a = request.form['c41']
-        shape_tolerance_b = request.form['c42']
-        shape_tolerance_c = request.form['c43']
-        shape_tolerance_d = request.form['c44']
-        roughness_a = request.form['c51']
-        roughness_b = request.form['c52']
-        roughness_c = request.form['c53']
-        roughness_d = request.form['c54']
-        alttechnologie = 'N'
-        verknüpfung = 'N'
-        capability = '0'
-        new = Technology(position=position, name=name, roughness_a=roughness_a, roughness_b=roughness_b, roughness_c=roughness_c, roughness_d=roughness_d, shape_tolerance_a=shape_tolerance_a, shape_tolerance_b=shape_tolerance_b, shape_tolerance_c=shape_tolerance_c, shape_tolerance_d=shape_tolerance_d, max_machining_path_x_a=max_machining_path_x_a, max_machining_path_x_b=max_machining_path_x_b, max_machining_path_x_c=max_machining_path_x_c, max_machining_path_x_d=max_machining_path_x_d,
-                         max_machining_path_y_a=max_machining_path_y_a, max_machining_path_y_b=max_machining_path_y_b, max_machining_path_y_c=max_machining_path_y_c, max_machining_path_y_d=max_machining_path_y_d, max_machining_path_z_a=max_machining_path_z_a, max_machining_path_z_b=max_machining_path_z_b, max_machining_path_z_c=max_machining_path_z_c, max_machining_path_z_d=max_machining_path_z_d, alttechnologie=alttechnologie, verknüpfung=verknüpfung, capability=capability)
+    if request.method == "POST":
+        position = request.form["position"]
+        name = request.form["c00"]
+        max_machining_path_x_a = request.form["c11"]
+        max_machining_path_x_b = request.form["c12"]
+        max_machining_path_x_c = request.form["c13"]
+        max_machining_path_x_d = request.form["c14"]
+        max_machining_path_y_a = request.form["c21"]
+        max_machining_path_y_b = request.form["c22"]
+        max_machining_path_y_c = request.form["c23"]
+        max_machining_path_y_d = request.form["c24"]
+        max_machining_path_z_a = request.form["c31"]
+        max_machining_path_z_b = request.form["c32"]
+        max_machining_path_z_c = request.form["c33"]
+        max_machining_path_z_d = request.form["c34"]
+        shape_tolerance_a = request.form["c41"]
+        shape_tolerance_b = request.form["c42"]
+        shape_tolerance_c = request.form["c43"]
+        shape_tolerance_d = request.form["c44"]
+        roughness_a = request.form["c51"]
+        roughness_b = request.form["c52"]
+        roughness_c = request.form["c53"]
+        roughness_d = request.form["c54"]
+        alttechnologie = "N"
+        verknüpfung = "N"
+        capability = "0"
+        new = Technology(
+            position=position,
+            name=name,
+            roughness_a=roughness_a,
+            roughness_b=roughness_b,
+            roughness_c=roughness_c,
+            roughness_d=roughness_d,
+            shape_tolerance_a=shape_tolerance_a,
+            shape_tolerance_b=shape_tolerance_b,
+            shape_tolerance_c=shape_tolerance_c,
+            shape_tolerance_d=shape_tolerance_d,
+            max_machining_path_x_a=max_machining_path_x_a,
+            max_machining_path_x_b=max_machining_path_x_b,
+            max_machining_path_x_c=max_machining_path_x_c,
+            max_machining_path_x_d=max_machining_path_x_d,
+            max_machining_path_y_a=max_machining_path_y_a,
+            max_machining_path_y_b=max_machining_path_y_b,
+            max_machining_path_y_c=max_machining_path_y_c,
+            max_machining_path_y_d=max_machining_path_y_d,
+            max_machining_path_z_a=max_machining_path_z_a,
+            max_machining_path_z_b=max_machining_path_z_b,
+            max_machining_path_z_c=max_machining_path_z_c,
+            max_machining_path_z_d=max_machining_path_z_d,
+            alttechnologie=alttechnologie,
+            verknüpfung=verknüpfung,
+            capability=capability,
+        )
         db.session.add(new)
 
-        position = request.form['position']
-        name = request.form['c00']
-        laenge = request.form['check1']
-        breite = request.form['check2']
-        hoehe = request.form['check3']
-        rauheit = request.form['check4']
-        durchmesser = request.form['check5']
-        laenge_ein = request.form['input1']
-        breite_ein = request.form['input2']
-        hoehe_ein = request.form['input3']
-        rauheit_ein = request.form['input4']
-        durchmesser_ein = request.form['input5']
-        alttechnologie = 'N'
-        db.session.add(FCT(position=position, name=name, breite=breite, hoehe=hoehe, laenge=laenge, rauheit=rauheit,
-                           durchmesser=durchmesser, alttechnologie=alttechnologie, laenge_ein=laenge_ein, breite_ein=breite_ein, hoehe_ein=hoehe_ein, rauheit_ein=rauheit_ein, durchmesser_ein=durchmesser_ein))
+        position = request.form["position"]
+        name = request.form["c00"]
+        laenge = request.form["check1"]
+        breite = request.form["check2"]
+        hoehe = request.form["check3"]
+        rauheit = request.form["check4"]
+        durchmesser = request.form["check5"]
+        laenge_ein = request.form["input1"]
+        breite_ein = request.form["input2"]
+        hoehe_ein = request.form["input3"]
+        rauheit_ein = request.form["input4"]
+        durchmesser_ein = request.form["input5"]
+        alttechnologie = "N"
+        db.session.add(
+            FCT(
+                position=position,
+                name=name,
+                breite=breite,
+                hoehe=hoehe,
+                laenge=laenge,
+                rauheit=rauheit,
+                durchmesser=durchmesser,
+                alttechnologie=alttechnologie,
+                laenge_ein=laenge_ein,
+                breite_ein=breite_ein,
+                hoehe_ein=hoehe_ein,
+                rauheit_ein=rauheit_ein,
+                durchmesser_ein=durchmesser_ein,
+            )
+        )
 
         db.session.commit()
 
         fct = FCT.query.order_by(FCT.id.desc()).first()
-        if not fct.rauheit == '':
+        if not fct.rauheit == "":
             rauheit_bauteil = float(str(fct.rauheit).replace(",", "."))
-        if not fct.breite == '':
+        if not fct.breite == "":
             breite_bauteil = float(str(fct.breite).replace(",", "."))
-        if not fct.hoehe == '':
+        if not fct.hoehe == "":
             hoehe_bauteil = float(str(fct.hoehe).replace(",", "."))
-        if not fct.laenge == '':
+        if not fct.laenge == "":
             laenge_bauteil = float(str(fct.laenge).replace(",", "."))
-        if not fct.durchmesser == '':
+        if not fct.durchmesser == "":
             durchmesser_bauteil = float(str(fct.durchmesser).replace(",", "."))
 
         ft = Technology.query.order_by(Technology.id.desc()).first()
@@ -576,87 +742,120 @@ def create_technology():
         rauheit_b = float(str(ft.roughness_b).replace(",", "."))
         rauheit_c = float(str(ft.roughness_c).replace(",", "."))
         rauheit_d = float(str(ft.roughness_d).replace(",", "."))
-        maxbearbeitungswegx_a = float(
-            str(ft.max_machining_path_x_a).replace(",", "."))
-        maxbearbeitungswegx_b = float(
-            str(ft.max_machining_path_x_b).replace(",", "."))
-        maxbearbeitungswegx_c = float(
-            str(ft.max_machining_path_x_c).replace(",", "."))
-        maxbearbeitungswegx_d = float(
-            str(ft.max_machining_path_x_d).replace(",", "."))
-        maxbearbeitungswegy_a = float(
-            str(ft.max_machining_path_y_a).replace(",", "."))
-        maxbearbeitungswegy_b = float(
-            str(ft.max_machining_path_y_b).replace(",", "."))
-        maxbearbeitungswegy_c = float(
-            str(ft.max_machining_path_y_c).replace(",", "."))
-        maxbearbeitungswegy_d = float(
-            str(ft.max_machining_path_y_d).replace(",", "."))
-        maxbearbeitungswegz_a = float(
-            str(ft.max_machining_path_z_a).replace(",", "."))
-        maxbearbeitungswegz_b = float(
-            str(ft.max_machining_path_z_b).replace(",", "."))
-        maxbearbeitungswegz_c = float(
-            str(ft.max_machining_path_z_c).replace(",", "."))
-        maxbearbeitungswegz_d = float(
-            str(ft.max_machining_path_z_d).replace(",", "."))
+        maxbearbeitungswegx_a = float(str(ft.max_machining_path_x_a).replace(",", "."))
+        maxbearbeitungswegx_b = float(str(ft.max_machining_path_x_b).replace(",", "."))
+        maxbearbeitungswegx_c = float(str(ft.max_machining_path_x_c).replace(",", "."))
+        maxbearbeitungswegx_d = float(str(ft.max_machining_path_x_d).replace(",", "."))
+        maxbearbeitungswegy_a = float(str(ft.max_machining_path_y_a).replace(",", "."))
+        maxbearbeitungswegy_b = float(str(ft.max_machining_path_y_b).replace(",", "."))
+        maxbearbeitungswegy_c = float(str(ft.max_machining_path_y_c).replace(",", "."))
+        maxbearbeitungswegy_d = float(str(ft.max_machining_path_y_d).replace(",", "."))
+        maxbearbeitungswegz_a = float(str(ft.max_machining_path_z_a).replace(",", "."))
+        maxbearbeitungswegz_b = float(str(ft.max_machining_path_z_b).replace(",", "."))
+        maxbearbeitungswegz_c = float(str(ft.max_machining_path_z_c).replace(",", "."))
+        maxbearbeitungswegz_d = float(str(ft.max_machining_path_z_d).replace(",", "."))
         formtoleranz_a = float(str(ft.shape_tolerance_a).replace(",", "."))
         formtoleranz_b = float(str(ft.shape_tolerance_b).replace(",", "."))
         formtoleranz_c = float(str(ft.shape_tolerance_c).replace(",", "."))
         formtoleranz_d = float(str(ft.shape_tolerance_d).replace(",", "."))
 
-        fähigkeit_laenge = ''
-        fähigkeit_breite = ''
-        fähigkeit_hoehe = ''
-        fähigkeit_rauheit = ''
-        fähigkeit_durchmesser = ''
+        fähigkeit_laenge = ""
+        fähigkeit_breite = ""
+        fähigkeit_hoehe = ""
+        fähigkeit_rauheit = ""
+        fähigkeit_durchmesser = ""
 
-        if not laenge == '':
+        if not laenge == "":
             if maxbearbeitungswegx_b <= laenge_bauteil <= maxbearbeitungswegx_c:
-                fähigkeit_laenge = '2'
-            if maxbearbeitungswegx_a <= laenge_bauteil < maxbearbeitungswegx_b or maxbearbeitungswegx_c <= laenge_bauteil < maxbearbeitungswegx_d:
-                fähigkeit_laenge = '1'
-            if maxbearbeitungswegx_a > laenge_bauteil or maxbearbeitungswegx_d < laenge_bauteil:
-                fähigkeit_laenge = '0'
+                fähigkeit_laenge = "2"
+            if (
+                maxbearbeitungswegx_a <= laenge_bauteil < maxbearbeitungswegx_b
+                or maxbearbeitungswegx_c <= laenge_bauteil < maxbearbeitungswegx_d
+            ):
+                fähigkeit_laenge = "1"
+            if (
+                maxbearbeitungswegx_a > laenge_bauteil
+                or maxbearbeitungswegx_d < laenge_bauteil
+            ):
+                fähigkeit_laenge = "0"
 
-        if not breite == '':
+        if not breite == "":
             if maxbearbeitungswegy_b <= breite_bauteil <= maxbearbeitungswegy_c:
-                fähigkeit_breite = '2'
-            if maxbearbeitungswegy_a <= breite_bauteil < maxbearbeitungswegy_b or maxbearbeitungswegy_c <= breite_bauteil < maxbearbeitungswegy_d:
-                fähigkeit_breite = '1'
-            if maxbearbeitungswegy_a > breite_bauteil or maxbearbeitungswegy_d < breite_bauteil:
-                fähigkeit_breite = '0'
+                fähigkeit_breite = "2"
+            if (
+                maxbearbeitungswegy_a <= breite_bauteil < maxbearbeitungswegy_b
+                or maxbearbeitungswegy_c <= breite_bauteil < maxbearbeitungswegy_d
+            ):
+                fähigkeit_breite = "1"
+            if (
+                maxbearbeitungswegy_a > breite_bauteil
+                or maxbearbeitungswegy_d < breite_bauteil
+            ):
+                fähigkeit_breite = "0"
 
-        if not hoehe == '':
+        if not hoehe == "":
             if maxbearbeitungswegz_b <= hoehe_bauteil <= maxbearbeitungswegz_c:
-                fähigkeit_hoehe = '2'
-            if maxbearbeitungswegz_a <= hoehe_bauteil < maxbearbeitungswegz_b or maxbearbeitungswegz_c <= hoehe_bauteil < maxbearbeitungswegz_d:
-                fähigkeit_hoehe = '1'
-            if maxbearbeitungswegz_a > hoehe_bauteil or maxbearbeitungswegz_d < hoehe_bauteil:
-                fähigkeit_hoehe = '0'
+                fähigkeit_hoehe = "2"
+            if (
+                maxbearbeitungswegz_a <= hoehe_bauteil < maxbearbeitungswegz_b
+                or maxbearbeitungswegz_c <= hoehe_bauteil < maxbearbeitungswegz_d
+            ):
+                fähigkeit_hoehe = "1"
+            if (
+                maxbearbeitungswegz_a > hoehe_bauteil
+                or maxbearbeitungswegz_d < hoehe_bauteil
+            ):
+                fähigkeit_hoehe = "0"
 
-        if not rauheit == '':
+        if not rauheit == "":
             if rauheit_b <= rauheit_bauteil <= rauheit_c:
-                fähigkeit_rauheit = '2'
-            if rauheit_a <= rauheit_bauteil < rauheit_b or rauheit_c <= rauheit_bauteil < rauheit_d:
-                fähigkeit_rauheit = '1'
+                fähigkeit_rauheit = "2"
+            if (
+                rauheit_a <= rauheit_bauteil < rauheit_b
+                or rauheit_c <= rauheit_bauteil < rauheit_d
+            ):
+                fähigkeit_rauheit = "1"
             if rauheit_a > rauheit_bauteil or rauheit_d < rauheit_bauteil:
-                fähigkeit_rauheit = '0'
+                fähigkeit_rauheit = "0"
 
-        if not durchmesser == '':
+        if not durchmesser == "":
             if formtoleranz_b <= durchmesser_bauteil <= formtoleranz_c:
-                fähigkeit_durchmesser = '2'
-            if formtoleranz_a <= durchmesser_bauteil < formtoleranz_b or formtoleranz_c <= durchmesser_bauteil < formtoleranz_d:
-                fähigkeit_durchmesser = '1'
-            if formtoleranz_a > durchmesser_bauteil or formtoleranz_d < durchmesser_bauteil:
-                fähigkeit_durchmesser = '0'
+                fähigkeit_durchmesser = "2"
+            if (
+                formtoleranz_a <= durchmesser_bauteil < formtoleranz_b
+                or formtoleranz_c <= durchmesser_bauteil < formtoleranz_d
+            ):
+                fähigkeit_durchmesser = "1"
+            if (
+                formtoleranz_a > durchmesser_bauteil
+                or formtoleranz_d < durchmesser_bauteil
+            ):
+                fähigkeit_durchmesser = "0"
 
-        if fähigkeit_laenge == '2' or fähigkeit_hoehe == '2' or fähigkeit_breite == '2' or fähigkeit_rauheit == '2' or fähigkeit_durchmesser == '2':
-            ft.capability = '2'
-        if fähigkeit_laenge == '1' or fähigkeit_hoehe == '1' or fähigkeit_breite == '1' or fähigkeit_rauheit == '1' or fähigkeit_durchmesser == '1':
-            ft.capability = '1'
-        if fähigkeit_laenge == '0' or fähigkeit_hoehe == '0' or fähigkeit_breite == '0' or fähigkeit_rauheit == '0' or fähigkeit_durchmesser == '0':
-            ft.capability = '0'
+        if (
+            fähigkeit_laenge == "2"
+            or fähigkeit_hoehe == "2"
+            or fähigkeit_breite == "2"
+            or fähigkeit_rauheit == "2"
+            or fähigkeit_durchmesser == "2"
+        ):
+            ft.capability = "2"
+        if (
+            fähigkeit_laenge == "1"
+            or fähigkeit_hoehe == "1"
+            or fähigkeit_breite == "1"
+            or fähigkeit_rauheit == "1"
+            or fähigkeit_durchmesser == "1"
+        ):
+            ft.capability = "1"
+        if (
+            fähigkeit_laenge == "0"
+            or fähigkeit_hoehe == "0"
+            or fähigkeit_breite == "0"
+            or fähigkeit_rauheit == "0"
+            or fähigkeit_durchmesser == "0"
+        ):
+            ft.capability = "0"
 
         db.session.commit()
 
@@ -664,71 +863,113 @@ def create_technology():
             delete_entry = Tool.query.get_or_404(2)
             db.session.delete(delete_entry)
             db.session.commit()
-        return redirect('/main/ft', )
+        return redirect(
+            "/main/ft",
+        )
 
     return render_template("main/create_technology.html")
 
 
-@main.route('/create_alttechnology', methods=["GET", "POST"])
+@main.route("/create_alttechnology", methods=["GET", "POST"])
 def create_alttechnology():
-    if request.method == 'POST':
-        position = ''
-        name = request.form['ca00']
-        max_machining_path_x_a = request.form['ca11']
-        max_machining_path_x_b = request.form['ca12']
-        max_machining_path_x_c = request.form['ca13']
-        max_machining_path_x_d = request.form['ca14']
-        max_machining_path_y_a = request.form['ca21']
-        max_machining_path_y_b = request.form['ca22']
-        max_machining_path_y_c = request.form['ca23']
-        max_machining_path_y_d = request.form['ca24']
-        max_machining_path_z_a = request.form['ca31']
-        max_machining_path_z_b = request.form['ca32']
-        max_machining_path_z_c = request.form['ca33']
-        max_machining_path_z_d = request.form['ca34']
-        shape_tolerance_a = request.form['ca41']
-        shape_tolerance_b = request.form['ca42']
-        shape_tolerance_c = request.form['ca43']
-        shape_tolerance_d = request.form['ca44']
-        roughness_a = request.form['ca51']
-        roughness_b = request.form['ca52']
-        roughness_c = request.form['ca53']
-        roughness_d = request.form['ca54']
-        alttechnologie = 'Y'
-        verknüpfung = request.form['altft']
-        capability = '0'
-        new = Technology(position=position, name=name, roughness_a=roughness_a, roughness_b=roughness_b, roughness_c=roughness_c, roughness_d=roughness_d, shape_tolerance_a=shape_tolerance_a, shape_tolerance_b=shape_tolerance_b, shape_tolerance_c=shape_tolerance_c, shape_tolerance_d=shape_tolerance_d, max_machining_path_x_a=max_machining_path_x_a, max_machining_path_x_b=max_machining_path_x_b, max_machining_path_x_c=max_machining_path_x_c, max_machining_path_x_d=max_machining_path_x_d,
-                         max_machining_path_y_a=max_machining_path_y_a, max_machining_path_y_b=max_machining_path_y_b, max_machining_path_y_c=max_machining_path_y_c, max_machining_path_y_d=max_machining_path_y_d, max_machining_path_z_a=max_machining_path_z_a, max_machining_path_z_b=max_machining_path_z_b, max_machining_path_z_c=max_machining_path_z_c, max_machining_path_z_d=max_machining_path_z_d, alttechnologie=alttechnologie, verknüpfung=verknüpfung, capability=capability)
+    if request.method == "POST":
+        position = ""
+        name = request.form["ca00"]
+        max_machining_path_x_a = request.form["ca11"]
+        max_machining_path_x_b = request.form["ca12"]
+        max_machining_path_x_c = request.form["ca13"]
+        max_machining_path_x_d = request.form["ca14"]
+        max_machining_path_y_a = request.form["ca21"]
+        max_machining_path_y_b = request.form["ca22"]
+        max_machining_path_y_c = request.form["ca23"]
+        max_machining_path_y_d = request.form["ca24"]
+        max_machining_path_z_a = request.form["ca31"]
+        max_machining_path_z_b = request.form["ca32"]
+        max_machining_path_z_c = request.form["ca33"]
+        max_machining_path_z_d = request.form["ca34"]
+        shape_tolerance_a = request.form["ca41"]
+        shape_tolerance_b = request.form["ca42"]
+        shape_tolerance_c = request.form["ca43"]
+        shape_tolerance_d = request.form["ca44"]
+        roughness_a = request.form["ca51"]
+        roughness_b = request.form["ca52"]
+        roughness_c = request.form["ca53"]
+        roughness_d = request.form["ca54"]
+        alttechnologie = "Y"
+        verknüpfung = request.form["altft"]
+        capability = "0"
+        new = Technology(
+            position=position,
+            name=name,
+            roughness_a=roughness_a,
+            roughness_b=roughness_b,
+            roughness_c=roughness_c,
+            roughness_d=roughness_d,
+            shape_tolerance_a=shape_tolerance_a,
+            shape_tolerance_b=shape_tolerance_b,
+            shape_tolerance_c=shape_tolerance_c,
+            shape_tolerance_d=shape_tolerance_d,
+            max_machining_path_x_a=max_machining_path_x_a,
+            max_machining_path_x_b=max_machining_path_x_b,
+            max_machining_path_x_c=max_machining_path_x_c,
+            max_machining_path_x_d=max_machining_path_x_d,
+            max_machining_path_y_a=max_machining_path_y_a,
+            max_machining_path_y_b=max_machining_path_y_b,
+            max_machining_path_y_c=max_machining_path_y_c,
+            max_machining_path_y_d=max_machining_path_y_d,
+            max_machining_path_z_a=max_machining_path_z_a,
+            max_machining_path_z_b=max_machining_path_z_b,
+            max_machining_path_z_c=max_machining_path_z_c,
+            max_machining_path_z_d=max_machining_path_z_d,
+            alttechnologie=alttechnologie,
+            verknüpfung=verknüpfung,
+            capability=capability,
+        )
         db.session.add(new)
 
-        position = ''
-        name = request.form['ca00']
-        laenge = request.form['check1']
-        breite = request.form['check2']
-        hoehe = request.form['check3']
-        rauheit = request.form['check4']
-        durchmesser = request.form['check5']
-        laenge_ein = request.form['input1']
-        breite_ein = request.form['input2']
-        hoehe_ein = request.form['input3']
-        rauheit_ein = request.form['input4']
-        durchmesser_ein = request.form['input5']
-        alttechnologie = 'Y'
-        db.session.add(FCT(position=position, name=name, breite=breite, hoehe=hoehe, laenge=laenge, rauheit=rauheit,
-                           durchmesser=durchmesser, alttechnologie=alttechnologie, laenge_ein=laenge_ein, breite_ein=breite_ein, hoehe_ein=hoehe_ein, rauheit_ein=rauheit_ein, durchmesser_ein=durchmesser_ein))
+        position = ""
+        name = request.form["ca00"]
+        laenge = request.form["check1"]
+        breite = request.form["check2"]
+        hoehe = request.form["check3"]
+        rauheit = request.form["check4"]
+        durchmesser = request.form["check5"]
+        laenge_ein = request.form["input1"]
+        breite_ein = request.form["input2"]
+        hoehe_ein = request.form["input3"]
+        rauheit_ein = request.form["input4"]
+        durchmesser_ein = request.form["input5"]
+        alttechnologie = "Y"
+        db.session.add(
+            FCT(
+                position=position,
+                name=name,
+                breite=breite,
+                hoehe=hoehe,
+                laenge=laenge,
+                rauheit=rauheit,
+                durchmesser=durchmesser,
+                alttechnologie=alttechnologie,
+                laenge_ein=laenge_ein,
+                breite_ein=breite_ein,
+                hoehe_ein=hoehe_ein,
+                rauheit_ein=rauheit_ein,
+                durchmesser_ein=durchmesser_ein,
+            )
+        )
 
         db.session.commit()
 
         fct = FCT.query.order_by(FCT.id.desc()).first()
-        if not fct.rauheit == '':
+        if not fct.rauheit == "":
             rauheit_bauteil = float(str(fct.rauheit).replace(",", "."))
-        if not fct.breite == '':
+        if not fct.breite == "":
             breite_bauteil = float(str(fct.breite).replace(",", "."))
-        if not fct.hoehe == '':
+        if not fct.hoehe == "":
             hoehe_bauteil = float(str(fct.hoehe).replace(",", "."))
-        if not fct.laenge == '':
+        if not fct.laenge == "":
             laenge_bauteil = float(str(fct.laenge).replace(",", "."))
-        if not fct.durchmesser == '':
+        if not fct.durchmesser == "":
             durchmesser_bauteil = float(str(fct.durchmesser).replace(",", "."))
 
         ft = Technology.query.order_by(Technology.id.desc()).first()
@@ -736,87 +977,120 @@ def create_alttechnology():
         rauheit_b = float(str(ft.roughness_b).replace(",", "."))
         rauheit_c = float(str(ft.roughness_c).replace(",", "."))
         rauheit_d = float(str(ft.roughness_d).replace(",", "."))
-        maxbearbeitungswegx_a = float(
-            str(ft.max_machining_path_x_a).replace(",", "."))
-        maxbearbeitungswegx_b = float(
-            str(ft.max_machining_path_x_b).replace(",", "."))
-        maxbearbeitungswegx_c = float(
-            str(ft.max_machining_path_x_c).replace(",", "."))
-        maxbearbeitungswegx_d = float(
-            str(ft.max_machining_path_x_d).replace(",", "."))
-        maxbearbeitungswegy_a = float(
-            str(ft.max_machining_path_y_a).replace(",", "."))
-        maxbearbeitungswegy_b = float(
-            str(ft.max_machining_path_y_b).replace(",", "."))
-        maxbearbeitungswegy_c = float(
-            str(ft.max_machining_path_y_c).replace(",", "."))
-        maxbearbeitungswegy_d = float(
-            str(ft.max_machining_path_y_d).replace(",", "."))
-        maxbearbeitungswegz_a = float(
-            str(ft.max_machining_path_z_a).replace(",", "."))
-        maxbearbeitungswegz_b = float(
-            str(ft.max_machining_path_z_b).replace(",", "."))
-        maxbearbeitungswegz_c = float(
-            str(ft.max_machining_path_z_c).replace(",", "."))
-        maxbearbeitungswegz_d = float(
-            str(ft.max_machining_path_z_d).replace(",", "."))
+        maxbearbeitungswegx_a = float(str(ft.max_machining_path_x_a).replace(",", "."))
+        maxbearbeitungswegx_b = float(str(ft.max_machining_path_x_b).replace(",", "."))
+        maxbearbeitungswegx_c = float(str(ft.max_machining_path_x_c).replace(",", "."))
+        maxbearbeitungswegx_d = float(str(ft.max_machining_path_x_d).replace(",", "."))
+        maxbearbeitungswegy_a = float(str(ft.max_machining_path_y_a).replace(",", "."))
+        maxbearbeitungswegy_b = float(str(ft.max_machining_path_y_b).replace(",", "."))
+        maxbearbeitungswegy_c = float(str(ft.max_machining_path_y_c).replace(",", "."))
+        maxbearbeitungswegy_d = float(str(ft.max_machining_path_y_d).replace(",", "."))
+        maxbearbeitungswegz_a = float(str(ft.max_machining_path_z_a).replace(",", "."))
+        maxbearbeitungswegz_b = float(str(ft.max_machining_path_z_b).replace(",", "."))
+        maxbearbeitungswegz_c = float(str(ft.max_machining_path_z_c).replace(",", "."))
+        maxbearbeitungswegz_d = float(str(ft.max_machining_path_z_d).replace(",", "."))
         formtoleranz_a = float(str(ft.shape_tolerance_a).replace(",", "."))
         formtoleranz_b = float(str(ft.shape_tolerance_b).replace(",", "."))
         formtoleranz_c = float(str(ft.shape_tolerance_c).replace(",", "."))
         formtoleranz_d = float(str(ft.shape_tolerance_d).replace(",", "."))
 
-        fähigkeit_laenge = ''
-        fähigkeit_breite = ''
-        fähigkeit_hoehe = ''
-        fähigkeit_rauheit = ''
-        fähigkeit_durchmesser = ''
+        fähigkeit_laenge = ""
+        fähigkeit_breite = ""
+        fähigkeit_hoehe = ""
+        fähigkeit_rauheit = ""
+        fähigkeit_durchmesser = ""
 
-        if not laenge == '':
+        if not laenge == "":
             if maxbearbeitungswegx_b <= laenge_bauteil <= maxbearbeitungswegx_c:
-                fähigkeit_laenge = '2'
-            if maxbearbeitungswegx_a <= laenge_bauteil < maxbearbeitungswegx_b or maxbearbeitungswegx_c <= laenge_bauteil < maxbearbeitungswegx_d:
-                fähigkeit_laenge = '1'
-            if maxbearbeitungswegx_a > laenge_bauteil or maxbearbeitungswegx_d < laenge_bauteil:
-                fähigkeit_laenge = '0'
+                fähigkeit_laenge = "2"
+            if (
+                maxbearbeitungswegx_a <= laenge_bauteil < maxbearbeitungswegx_b
+                or maxbearbeitungswegx_c <= laenge_bauteil < maxbearbeitungswegx_d
+            ):
+                fähigkeit_laenge = "1"
+            if (
+                maxbearbeitungswegx_a > laenge_bauteil
+                or maxbearbeitungswegx_d < laenge_bauteil
+            ):
+                fähigkeit_laenge = "0"
 
-        if not breite == '':
+        if not breite == "":
             if maxbearbeitungswegy_b <= breite_bauteil <= maxbearbeitungswegy_c:
-                fähigkeit_breite = '2'
-            if maxbearbeitungswegy_a <= breite_bauteil < maxbearbeitungswegy_b or maxbearbeitungswegy_c <= breite_bauteil < maxbearbeitungswegy_d:
-                fähigkeit_breite = '1'
-            if maxbearbeitungswegy_a > breite_bauteil or maxbearbeitungswegy_d < breite_bauteil:
-                fähigkeit_breite = '0'
+                fähigkeit_breite = "2"
+            if (
+                maxbearbeitungswegy_a <= breite_bauteil < maxbearbeitungswegy_b
+                or maxbearbeitungswegy_c <= breite_bauteil < maxbearbeitungswegy_d
+            ):
+                fähigkeit_breite = "1"
+            if (
+                maxbearbeitungswegy_a > breite_bauteil
+                or maxbearbeitungswegy_d < breite_bauteil
+            ):
+                fähigkeit_breite = "0"
 
-        if not hoehe == '':
+        if not hoehe == "":
             if maxbearbeitungswegz_b <= hoehe_bauteil <= maxbearbeitungswegz_c:
-                fähigkeit_hoehe = '2'
-            if maxbearbeitungswegz_a <= hoehe_bauteil < maxbearbeitungswegz_b or maxbearbeitungswegz_c <= hoehe_bauteil < maxbearbeitungswegz_d:
-                fähigkeit_hoehe = '1'
-            if maxbearbeitungswegz_a > hoehe_bauteil or maxbearbeitungswegz_d < hoehe_bauteil:
-                fähigkeit_hoehe = '0'
+                fähigkeit_hoehe = "2"
+            if (
+                maxbearbeitungswegz_a <= hoehe_bauteil < maxbearbeitungswegz_b
+                or maxbearbeitungswegz_c <= hoehe_bauteil < maxbearbeitungswegz_d
+            ):
+                fähigkeit_hoehe = "1"
+            if (
+                maxbearbeitungswegz_a > hoehe_bauteil
+                or maxbearbeitungswegz_d < hoehe_bauteil
+            ):
+                fähigkeit_hoehe = "0"
 
-        if not rauheit == '':
+        if not rauheit == "":
             if rauheit_b <= rauheit_bauteil <= rauheit_c:
-                fähigkeit_rauheit = '2'
-            if rauheit_a <= rauheit_bauteil < rauheit_b or rauheit_c <= rauheit_bauteil < rauheit_d:
-                fähigkeit_rauheit = '1'
+                fähigkeit_rauheit = "2"
+            if (
+                rauheit_a <= rauheit_bauteil < rauheit_b
+                or rauheit_c <= rauheit_bauteil < rauheit_d
+            ):
+                fähigkeit_rauheit = "1"
             if rauheit_a > rauheit_bauteil or rauheit_d < rauheit_bauteil:
-                fähigkeit_rauheit = '0'
+                fähigkeit_rauheit = "0"
 
-        if not durchmesser == '':
+        if not durchmesser == "":
             if formtoleranz_b <= durchmesser_bauteil <= formtoleranz_c:
-                fähigkeit_durchmesser = '2'
-            if formtoleranz_a <= durchmesser_bauteil < formtoleranz_b or formtoleranz_c <= durchmesser_bauteil < formtoleranz_d:
-                fähigkeit_durchmesser = '1'
-            if formtoleranz_a > durchmesser_bauteil or formtoleranz_d < durchmesser_bauteil:
-                fähigkeit_durchmesser = '0'
+                fähigkeit_durchmesser = "2"
+            if (
+                formtoleranz_a <= durchmesser_bauteil < formtoleranz_b
+                or formtoleranz_c <= durchmesser_bauteil < formtoleranz_d
+            ):
+                fähigkeit_durchmesser = "1"
+            if (
+                formtoleranz_a > durchmesser_bauteil
+                or formtoleranz_d < durchmesser_bauteil
+            ):
+                fähigkeit_durchmesser = "0"
 
-        if fähigkeit_laenge == '2' or fähigkeit_hoehe == '2' or fähigkeit_breite == '2' or fähigkeit_rauheit == '2' or fähigkeit_durchmesser == '2':
-            ft.capability = '2'
-        if fähigkeit_laenge == '1' or fähigkeit_hoehe == '1' or fähigkeit_breite == '1' or fähigkeit_rauheit == '1' or fähigkeit_durchmesser == '1':
-            ft.capability = '1'
-        if fähigkeit_laenge == '0' or fähigkeit_hoehe == '0' or fähigkeit_breite == '0' or fähigkeit_rauheit == '0' or fähigkeit_durchmesser == '0':
-            ft.capability = '0'
+        if (
+            fähigkeit_laenge == "2"
+            or fähigkeit_hoehe == "2"
+            or fähigkeit_breite == "2"
+            or fähigkeit_rauheit == "2"
+            or fähigkeit_durchmesser == "2"
+        ):
+            ft.capability = "2"
+        if (
+            fähigkeit_laenge == "1"
+            or fähigkeit_hoehe == "1"
+            or fähigkeit_breite == "1"
+            or fähigkeit_rauheit == "1"
+            or fähigkeit_durchmesser == "1"
+        ):
+            ft.capability = "1"
+        if (
+            fähigkeit_laenge == "0"
+            or fähigkeit_hoehe == "0"
+            or fähigkeit_breite == "0"
+            or fähigkeit_rauheit == "0"
+            or fähigkeit_durchmesser == "0"
+        ):
+            ft.capability = "0"
 
         db.session.commit()
 
@@ -824,12 +1098,14 @@ def create_alttechnology():
             delete_entry = Tool.query.get_or_404(2)
             db.session.delete(delete_entry)
             db.session.commit()
-        return redirect('/main/ft', )
+        return redirect(
+            "/main/ft",
+        )
     technology = Technology.query.order_by(Technology.position).all()
     return render_template("main/create_alttechnology.html", technology=technology)
 
 
-@main.route('/update_technology/<int:id>', methods=['GET', 'POST'])
+@main.route("/update_technology/<int:id>", methods=["GET", "POST"])
 def update_technology(id):
     """
     READ oder UPDATE Technology
@@ -842,43 +1118,42 @@ def update_technology(id):
             db.session.commit()
             return redirect(url_for('main.index'))
         flash("Validierung fehlgeschlagen")
-    return render_template('main/update_technology.html', form=form, tech=tech)
-"""
+    return render_template('main/update_technology.html', form=form, tech=tech)"""
     technologie = Technology.query.get_or_404(id)
     fct = FCT.query.get_or_404(id)
-    if request.method == 'POST':
+    if request.method == "POST":
 
-        technologie.name = request.form['cb00']
-        technologie.max_machining_path_x_a = request.form['cb11']
-        technologie.max_machining_path_x_b = request.form['cb12']
-        technologie.max_machining_path_x_c = request.form['cb13']
-        technologie.max_machining_path_x_d = request.form['cb14']
-        technologie.max_machining_path_y_a = request.form['cb21']
-        technologie.max_machining_path_y_b = request.form['cb22']
-        technologie.max_machining_path_y_c = request.form['cb23']
-        technologie.max_machining_path_y_d = request.form['cb24']
-        technologie.max_machining_path_z_a = request.form['cb31']
-        technologie.max_machining_path_z_b = request.form['cb32']
-        technologie.max_machining_path_z_c = request.form['cb33']
-        technologie.max_machining_path_z_d = request.form['cb34']
-        technologie.shape_tolerance_a = request.form['cb41']
-        technologie.shape_tolerance_b = request.form['cb42']
-        technologie.shape_tolerance_c = request.form['cb43']
-        technologie.shape_tolerance_d = request.form['cb44']
-        technologie.roughness_a = request.form['cb51']
-        technologie.roughness_b = request.form['cb52']
-        technologie.roughness_c = request.form['cb53']
-        technologie.roughness_d = request.form['cb54']
-        technologie.position = request.form['position1']
+        technologie.name = request.form["cb00"]
+        technologie.max_machining_path_x_a = request.form["cb11"]
+        technologie.max_machining_path_x_b = request.form["cb12"]
+        technologie.max_machining_path_x_c = request.form["cb13"]
+        technologie.max_machining_path_x_d = request.form["cb14"]
+        technologie.max_machining_path_y_a = request.form["cb21"]
+        technologie.max_machining_path_y_b = request.form["cb22"]
+        technologie.max_machining_path_y_c = request.form["cb23"]
+        technologie.max_machining_path_y_d = request.form["cb24"]
+        technologie.max_machining_path_z_a = request.form["cb31"]
+        technologie.max_machining_path_z_b = request.form["cb32"]
+        technologie.max_machining_path_z_c = request.form["cb33"]
+        technologie.max_machining_path_z_d = request.form["cb34"]
+        technologie.shape_tolerance_a = request.form["cb41"]
+        technologie.shape_tolerance_b = request.form["cb42"]
+        technologie.shape_tolerance_c = request.form["cb43"]
+        technologie.shape_tolerance_d = request.form["cb44"]
+        technologie.roughness_a = request.form["cb51"]
+        technologie.roughness_b = request.form["cb52"]
+        technologie.roughness_c = request.form["cb53"]
+        technologie.roughness_d = request.form["cb54"]
+        technologie.position = request.form["position1"]
 
-        fct.name = request.form['cb00']
-        fct.position = request.form['position1']
-        fct.laenge = request.form['check1']
-        fct.breite = request.form['check2']
-        fct.hoehe = request.form['check3']
-        fct.rauheit = request.form['check4']
-        fct.durchmesser = request.form['check5']
-        technologie.capability = '0'
+        fct.name = request.form["cb00"]
+        fct.position = request.form["position1"]
+        fct.laenge = request.form["check1"]
+        fct.breite = request.form["check2"]
+        fct.hoehe = request.form["check3"]
+        fct.rauheit = request.form["check4"]
+        fct.durchmesser = request.form["check5"]
+        technologie.capability = "0"
         db.session.commit()
 
         if not fct.rauheit == "":
@@ -897,30 +1172,18 @@ def update_technology(id):
         rauheit_b = float(str(ft.roughness_b).replace(",", "."))
         rauheit_c = float(str(ft.roughness_c).replace(",", "."))
         rauheit_d = float(str(ft.roughness_d).replace(",", "."))
-        maxbearbeitungswegx_a = float(
-            str(ft.max_machining_path_x_a).replace(",", "."))
-        maxbearbeitungswegx_b = float(
-            str(ft.max_machining_path_x_b).replace(",", "."))
-        maxbearbeitungswegx_c = float(
-            str(ft.max_machining_path_x_c).replace(",", "."))
-        maxbearbeitungswegx_d = float(
-            str(ft.max_machining_path_x_d).replace(",", "."))
-        maxbearbeitungswegy_a = float(
-            str(ft.max_machining_path_y_a).replace(",", "."))
-        maxbearbeitungswegy_b = float(
-            str(ft.max_machining_path_y_b).replace(",", "."))
-        maxbearbeitungswegy_c = float(
-            str(ft.max_machining_path_y_c).replace(",", "."))
-        maxbearbeitungswegy_d = float(
-            str(ft.max_machining_path_y_d).replace(",", "."))
-        maxbearbeitungswegz_a = float(
-            str(ft.max_machining_path_z_a).replace(",", "."))
-        maxbearbeitungswegz_b = float(
-            str(ft.max_machining_path_z_b).replace(",", "."))
-        maxbearbeitungswegz_c = float(
-            str(ft.max_machining_path_z_c).replace(",", "."))
-        maxbearbeitungswegz_d = float(
-            str(ft.max_machining_path_z_d).replace(",", "."))
+        maxbearbeitungswegx_a = float(str(ft.max_machining_path_x_a).replace(",", "."))
+        maxbearbeitungswegx_b = float(str(ft.max_machining_path_x_b).replace(",", "."))
+        maxbearbeitungswegx_c = float(str(ft.max_machining_path_x_c).replace(",", "."))
+        maxbearbeitungswegx_d = float(str(ft.max_machining_path_x_d).replace(",", "."))
+        maxbearbeitungswegy_a = float(str(ft.max_machining_path_y_a).replace(",", "."))
+        maxbearbeitungswegy_b = float(str(ft.max_machining_path_y_b).replace(",", "."))
+        maxbearbeitungswegy_c = float(str(ft.max_machining_path_y_c).replace(",", "."))
+        maxbearbeitungswegy_d = float(str(ft.max_machining_path_y_d).replace(",", "."))
+        maxbearbeitungswegz_a = float(str(ft.max_machining_path_z_a).replace(",", "."))
+        maxbearbeitungswegz_b = float(str(ft.max_machining_path_z_b).replace(",", "."))
+        maxbearbeitungswegz_c = float(str(ft.max_machining_path_z_c).replace(",", "."))
+        maxbearbeitungswegz_d = float(str(ft.max_machining_path_z_d).replace(",", "."))
         formtoleranz_a = float(str(ft.shape_tolerance_a).replace(",", "."))
         formtoleranz_b = float(str(ft.shape_tolerance_b).replace(",", "."))
         formtoleranz_c = float(str(ft.shape_tolerance_c).replace(",", "."))
@@ -931,65 +1194,112 @@ def update_technology(id):
         rauheit = fct.rauheit
         durchmesser = fct.durchmesser
 
-        fähigkeit_laenge = ''
-        fähigkeit_breite = ''
-        fähigkeit_hoehe = ''
-        fähigkeit_rauheit = ''
-        fähigkeit_durchmesser = ''
+        fähigkeit_laenge = ""
+        fähigkeit_breite = ""
+        fähigkeit_hoehe = ""
+        fähigkeit_rauheit = ""
+        fähigkeit_durchmesser = ""
 
-        if not laenge == '':
+        if not laenge == "":
             if maxbearbeitungswegx_b <= laenge_bauteil <= maxbearbeitungswegx_c:
-                fähigkeit_laenge = '2'
-            if maxbearbeitungswegx_a <= laenge_bauteil < maxbearbeitungswegx_b or maxbearbeitungswegx_c <= laenge_bauteil < maxbearbeitungswegx_d:
-                fähigkeit_laenge = '1'
-            if maxbearbeitungswegx_a > laenge_bauteil or maxbearbeitungswegx_d < laenge_bauteil:
-                fähigkeit_laenge = '0'
+                fähigkeit_laenge = "2"
+            if (
+                maxbearbeitungswegx_a <= laenge_bauteil < maxbearbeitungswegx_b
+                or maxbearbeitungswegx_c <= laenge_bauteil < maxbearbeitungswegx_d
+            ):
+                fähigkeit_laenge = "1"
+            if (
+                maxbearbeitungswegx_a > laenge_bauteil
+                or maxbearbeitungswegx_d < laenge_bauteil
+            ):
+                fähigkeit_laenge = "0"
 
-        if not breite == '':
+        if not breite == "":
             if maxbearbeitungswegy_b <= breite_bauteil <= maxbearbeitungswegy_c:
-                fähigkeit_breite = '2'
-            if maxbearbeitungswegy_a <= breite_bauteil < maxbearbeitungswegy_b or maxbearbeitungswegy_c <= breite_bauteil < maxbearbeitungswegy_d:
-                fähigkeit_breite = '1'
-            if maxbearbeitungswegy_a > breite_bauteil or maxbearbeitungswegy_d < breite_bauteil:
-                fähigkeit_breite = '0'
+                fähigkeit_breite = "2"
+            if (
+                maxbearbeitungswegy_a <= breite_bauteil < maxbearbeitungswegy_b
+                or maxbearbeitungswegy_c <= breite_bauteil < maxbearbeitungswegy_d
+            ):
+                fähigkeit_breite = "1"
+            if (
+                maxbearbeitungswegy_a > breite_bauteil
+                or maxbearbeitungswegy_d < breite_bauteil
+            ):
+                fähigkeit_breite = "0"
 
-        if not hoehe == '':
+        if not hoehe == "":
             if maxbearbeitungswegz_b <= hoehe_bauteil <= maxbearbeitungswegz_c:
-                fähigkeit_hoehe = '2'
-            if maxbearbeitungswegz_a <= hoehe_bauteil < maxbearbeitungswegz_b or maxbearbeitungswegz_c <= hoehe_bauteil < maxbearbeitungswegz_d:
-                fähigkeit_hoehe = '1'
-            if maxbearbeitungswegz_a > hoehe_bauteil or maxbearbeitungswegz_d < hoehe_bauteil:
-                fähigkeit_hoehe = '0'
+                fähigkeit_hoehe = "2"
+            if (
+                maxbearbeitungswegz_a <= hoehe_bauteil < maxbearbeitungswegz_b
+                or maxbearbeitungswegz_c <= hoehe_bauteil < maxbearbeitungswegz_d
+            ):
+                fähigkeit_hoehe = "1"
+            if (
+                maxbearbeitungswegz_a > hoehe_bauteil
+                or maxbearbeitungswegz_d < hoehe_bauteil
+            ):
+                fähigkeit_hoehe = "0"
 
-        if not rauheit == '':
+        if not rauheit == "":
             if rauheit_b <= rauheit_bauteil <= rauheit_c:
-                fähigkeit_rauheit = '2'
-            if rauheit_a <= rauheit_bauteil < rauheit_b or rauheit_c <= rauheit_bauteil < rauheit_d:
-                fähigkeit_rauheit = '1'
+                fähigkeit_rauheit = "2"
+            if (
+                rauheit_a <= rauheit_bauteil < rauheit_b
+                or rauheit_c <= rauheit_bauteil < rauheit_d
+            ):
+                fähigkeit_rauheit = "1"
             if rauheit_a > rauheit_bauteil or rauheit_d < rauheit_bauteil:
-                fähigkeit_rauheit = '0'
+                fähigkeit_rauheit = "0"
 
-        if not durchmesser == '':
+        if not durchmesser == "":
             if formtoleranz_b <= durchmesser_bauteil <= formtoleranz_c:
-                fähigkeit_durchmesser = '2'
-            if formtoleranz_a <= durchmesser_bauteil < formtoleranz_b or formtoleranz_c <= durchmesser_bauteil < formtoleranz_d:
-                fähigkeit_durchmesser = '1'
-            if formtoleranz_a > durchmesser_bauteil or formtoleranz_d < durchmesser_bauteil:
-                fähigkeit_durchmesser = '0'
+                fähigkeit_durchmesser = "2"
+            if (
+                formtoleranz_a <= durchmesser_bauteil < formtoleranz_b
+                or formtoleranz_c <= durchmesser_bauteil < formtoleranz_d
+            ):
+                fähigkeit_durchmesser = "1"
+            if (
+                formtoleranz_a > durchmesser_bauteil
+                or formtoleranz_d < durchmesser_bauteil
+            ):
+                fähigkeit_durchmesser = "0"
 
-        if fähigkeit_laenge == '2' or fähigkeit_hoehe == '2' or fähigkeit_breite == '2' or fähigkeit_rauheit == '2' or fähigkeit_durchmesser == '2':
-            ft.capability = '2'
-        if fähigkeit_laenge == '1' or fähigkeit_hoehe == '1' or fähigkeit_breite == '1' or fähigkeit_rauheit == '1' or fähigkeit_durchmesser == '1':
-            ft.capability = '1'
-        if fähigkeit_laenge == '0' or fähigkeit_hoehe == '0' or fähigkeit_breite == '0' or fähigkeit_rauheit == '0' or fähigkeit_durchmesser == '0':
-            ft.capability = '0'
+        if (
+            fähigkeit_laenge == "2"
+            or fähigkeit_hoehe == "2"
+            or fähigkeit_breite == "2"
+            or fähigkeit_rauheit == "2"
+            or fähigkeit_durchmesser == "2"
+        ):
+            ft.capability = "2"
+        if (
+            fähigkeit_laenge == "1"
+            or fähigkeit_hoehe == "1"
+            or fähigkeit_breite == "1"
+            or fähigkeit_rauheit == "1"
+            or fähigkeit_durchmesser == "1"
+        ):
+            ft.capability = "1"
+        if (
+            fähigkeit_laenge == "0"
+            or fähigkeit_hoehe == "0"
+            or fähigkeit_breite == "0"
+            or fähigkeit_rauheit == "0"
+            or fähigkeit_durchmesser == "0"
+        ):
+            ft.capability = "0"
 
         db.session.commit()
-        return redirect(url_for('main.index'))
-    return render_template('main/update_technology.html', fct=fct, technologie=technologie)
+        return redirect(url_for("main.index"))
+    return render_template(
+        "main/update_technology.html", fct=fct, technologie=technologie
+    )
 
 
-@main.route('/delete_technology/<int:id>')
+@main.route("/delete_technology/<int:id>")
 def delete_technology(id):
     """
     DELETE Technology
@@ -997,12 +1307,13 @@ def delete_technology(id):
     Technology.query.filter_by(id=id).delete()
     FCT.query.filter_by(id=id).delete()
     db.session.commit()
-    return redirect(url_for('main.index'))
+    return redirect(url_for("main.index"))
 
 
 # Model Tool
 
-@main.route('/create_tool', methods=["GET", "POST"])
+
+@main.route("/create_tool", methods=["GET", "POST"])
 def create_tool():
     """
     !!TODO!!
@@ -1011,99 +1322,114 @@ def create_tool():
     return "Create Tool Template"
 
 
-@main.route('/update_tool/<int:id>', methods=['GET', 'POST'])
+@main.route("/update_tool/<int:id>", methods=["GET", "POST"])
 def update_tool(id):
     """
     READ oder UPDATE Tool
     """
     tool = Tool.query.get_or_404(id)
-    #form = ToolForm(obj=tool)
-    if request.method == 'POST':
+    # form = ToolForm(obj=tool)
+    if request.method == "POST":
         # ----------------------------------------------------------
         if Tool.query.count() == 2:  # gibt es noch einen zweiten eintrag?
             delete_entry = Tool.query.get_or_404(2)
             db.session.delete(delete_entry)
             db.session.commit()
-        name_old = tool.name+"OLD"
+        name_old = tool.name + "OLD"
         force_old = tool.force
         width_old = tool.width
-        height_old = tool.height  # Damit der das Bauteil vor der Änderung noch aufrufen kann
-        length_old = tool.length            # Für weitere Berechnungen
+        height_old = (
+            tool.height
+        )  # Damit der das Bauteil vor der Änderung noch aufrufen kann
+        length_old = tool.length  # Für weitere Berechnungen
         roughness_old = tool.roughness
         diameter_old = tool.diameter
-        new = Tool(name=name_old, force=force_old, width=width_old, height=height_old,
-                   length=length_old, roughness=roughness_old, diameter=diameter_old)
+        new = Tool(
+            name=name_old,
+            force=force_old,
+            width=width_old,
+            height=height_old,
+            length=length_old,
+            roughness=roughness_old,
+            diameter=diameter_old,
+        )
         db.session.add(new)
-# ----------------------------------------------------------
-        tool.force = request.form['content1']
-        tool.width = request.form['content2']
-        tool.height = request.form['content3']
-        tool.length = request.form['content4']
-        tool.roughness = request.form['content5']
-        tool.diameter = request.form['content6']
+        # ----------------------------------------------------------
+        tool.force = request.form["content1"]
+        tool.width = request.form["content2"]
+        tool.height = request.form["content3"]
+        tool.length = request.form["content4"]
+        tool.roughness = request.form["content5"]
+        tool.diameter = request.form["content6"]
         db.session.commit()
-        return redirect(url_for('main.index'))
-    return render_template('main/update_tool.html', tool=tool)
+        return redirect(url_for("main.index"))
+    return render_template("main/update_tool.html", tool=tool)
 
 
-@main.route('/delete_tool/<int:id>', methods=['GET', 'POST'])
+@main.route("/delete_tool/<int:id>", methods=["GET", "POST"])
 def delete_tool(id):
     """
     DELETE Tool
     """
     Tool.query.filter_by(id=id).delete()
     db.session.commit()
-    return redirect(url_for('main.index'))
+    return redirect(url_for("main.index"))
 
 
-@main.route('/position/<int:pos>', methods=['GET', 'POST'])
+@main.route("/position/<int:pos>", methods=["GET", "POST"])
 def position(pos):
-    if request.method == 'POST':
-        if float(request.form['pos'+str(pos)]) <= Technology.query.filter_by(alttechnologie='N').count():
-            id = request.form['id'+str(pos)]
+    if request.method == "POST":
+        if (
+            float(request.form["pos" + str(pos)])
+            <= Technology.query.filter_by(alttechnologie="N").count()
+        ):
+            id = request.form["id" + str(pos)]
             technology = Technology.query.get_or_404(id)
             fct = FCT.query.get_or_404(id)
-            technology.position = request.form['pos'+str(pos)]
-            fct.position = request.form['pos'+str(pos)]
+            technology.position = request.form["pos" + str(pos)]
+            fct.position = request.form["pos" + str(pos)]
             technology_switch = Technology.query.filter_by(
-                position=technology.position).first()
+                position=technology.position
+            ).first()
             fct_switch = FCT.query.filter_by(position=fct.position).first()
             technology_switch.position = pos
             fct_switch.position = pos
             db.session.commit()
         else:
-            flash('Die maximal mögliche Anzahl an Positionen ist' +
-                  str(Technology.query.filter_by(alttechnologie='N').count()))
-        return redirect('/main/ft')
+            flash(
+                "Die maximal mögliche Anzahl an Positionen ist"
+                + str(Technology.query.filter_by(alttechnologie="N").count())
+            )
+        return redirect("/main/ft")
 
 
-@main.route('/save', methods=['POST', 'GET'])
+@main.route("/save", methods=["POST", "GET"])
 def save():
-    if request.method == 'POST':
+    if request.method == "POST":
 
-        for i in range(1, Technology.query.filter_by(alttechnologie='N').count()+1):
+        for i in range(1, Technology.query.filter_by(alttechnologie="N").count() + 1):
 
-            id = request.form['ft'+str(i)]
+            id = request.form["ft" + str(i)]
             ft_neu = Technology.query.get_or_404(id)
             fct = FCT.query.get_or_404(id)
             verknüpfung = ft_neu.verknüpfung
-            if not ft_neu.verknüpfung == 'N':
+            if not ft_neu.verknüpfung == "N":
                 fct_alt = FCT.query.get_or_404(verknüpfung)
                 ft_alt = Technology.query.get_or_404(verknüpfung)
-                ft_neu.alttechnologie = 'N'
-                ft_neu.verknüpfung = 'N'
+                ft_neu.alttechnologie = "N"
+                ft_neu.verknüpfung = "N"
                 ft_neu.position = ft_alt.position
                 fct.position = ft_alt.position
 
-                ft_alt.alttechnologie = 'Y'
-                fct.alttechnologie = 'N'
-                fct_alt.alttechnologie = 'Y'
+                ft_alt.alttechnologie = "Y"
+                fct.alttechnologie = "N"
+                fct_alt.alttechnologie = "Y"
                 ft_alt.verknüpfung = ft_neu.id
                 db.session.commit()
 
-                ft_alt.position = ''
-                fct_alt.position = ''
+                ft_alt.position = ""
+                fct_alt.position = ""
                 db.session.commit()
 
-    return redirect('/main/ft')
+    return redirect("/main/ft")
     # return render_template("main/ft.html")
