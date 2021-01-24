@@ -50,6 +50,7 @@ def index():
     )
 
 
+# datenbank füllen
 @main.route("/seed")
 def seed():
     """
@@ -663,6 +664,13 @@ def create_technology():
         roughness_b = request.form["c52"]
         roughness_c = request.form["c53"]
         roughness_d = request.form["c54"]
+        hauptzeit_tn = request.form["c61"]
+        ruestzeit_tr = request.form["c62"]
+        werkzeugwechselzeit_twz = request.form["c63"]
+        werkstückwechselzeit_twst = request.form["c64"]
+        losgroesse_nl = request.form["c65"]
+        standmenge_nwz = request.form["c66"]
+        fertigungsmittelnr_xfm = request.form["c67"]
         alttechnologie = "N"
         verknüpfung = "N"
         capability = "0"
@@ -692,6 +700,13 @@ def create_technology():
             alttechnologie=alttechnologie,
             verknüpfung=verknüpfung,
             capability=capability,
+            # hauptzeit_tn = hauptzeit_tn,
+            # ruestzeit_tr = ruestzeit_tr,
+            # werkzeugwechselzeit_twz = werkzeugwechselzeit_twz,
+            # werkzeugwechselzeit_twz = werkzeugwechselzeit_twz,
+            # losgroesse_nl = losgroesse_nl,
+            # standmenge_nwz = standmenge_nwz,
+            # fertigungsmittelnr_xfm = fertigungsmittelnr_xfm
         )
         db.session.add(new)
 
@@ -1148,6 +1163,13 @@ def update_technology(id):
         technologie.roughness_c = request.form["cb53"]
         technologie.roughness_d = request.form["cb54"]
         technologie.position = request.form["position1"]
+        technologie.hauptzeit_tn = request.form["cb61"]
+        technologie.ruestzeit_tr = request.form["cb62"]
+        technologie.werkzeugwechselzeit_twz = request.form["cb63"]
+        technologie.werkstückwechselzeit_twst = request.form["cb64"]
+        technologie.losgroesse_nl = request.form["cb65"]
+        technologie.standmenge_nwz = request.form["cb66"]
+        technologie.fertigungsmittelnr_xfm = request.form["cb67"]
 
         fct.name = request.form["cb00"]
         fct.position = request.form["position1"]
