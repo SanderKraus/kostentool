@@ -15,13 +15,15 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String())
     created_on = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(
-        db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+        db.DateTime, server_default=db.func.now(), onupdate=db.func.now()
+    )
 
     def create_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
 
 # Bauteildatenbak
 
@@ -37,11 +39,11 @@ class Tool(db.Model):
     diameter = db.Column(db.Integer)
     created_on = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(
-        db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+        db.DateTime, server_default=db.func.now(), onupdate=db.func.now()
+    )
 
     def seed(session):
-        random_name = ''.join(random.choice(string.ascii_lowercase)
-                              for i in range(8))
+        random_name = "".join(random.choice(string.ascii_lowercase) for i in range(8))
         tool = Tool(
             name=random_name,
             force=1,
@@ -53,7 +55,6 @@ class Tool(db.Model):
         )
         session.add(tool)
         session.commit()
-
 
 
 class FCT(db.Model):
@@ -72,10 +73,8 @@ class FCT(db.Model):
     durchmesser_ein = db.Column(db.Integer)
     alttechnologie = db.Column(db.Integer)
 
-
     def seed(session):
-        random_name = ''.join(random.choice(string.ascii_lowercase)
-                              for i in range(8))
+        random_name = "".join(random.choice(string.ascii_lowercase) for i in range(8))
         fct = FCT(
             name=random_name,
             position=1,
@@ -88,6 +87,7 @@ class FCT(db.Model):
         )
         session.add(fct)
         session.commit()
+
 
 class Technology(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -116,26 +116,25 @@ class Technology(db.Model):
     max_machining_path_z_c = db.Column(db.Integer)
     max_machining_path_z_d = db.Column(db.Integer)
 
-    #Kostentool
+    # Kostentool
     hauptzeit_tn = db.Column(db.Integer)
     ruestzeit_tr = db.Column(db.Integer)
     werkzeugwechselzeit_twz = db.Column(db.Integer)
     werkstückwechselzeit_twst = db.Column(db.Integer)
     losgroesse_nl = db.Column(db.Integer)
-    standmenge_nwz = db.Column(db.Integer) #Standmenge Werkzeug
-    fertigungsmittelnr_xfm = db.Column(db.Integer) #Anzahl der Fertigungsmittel
-
+    standmenge_nwz = db.Column(db.Integer)  # Standmenge Werkzeug
+    fertigungsmittelnr_xfm = db.Column(db.Integer)  # Anzahl der Fertigungsmittel
 
     capability = db.Column(db.Integer)
     alttechnologie = db.Column(db.Integer)
     verknüpfung = db.Column(db.Integer)
     created_on = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(
-        db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+        db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now()
+    )
 
     def seed(session):
-        random_name = ''.join(random.choice(string.ascii_lowercase)
-                              for i in range(8))
+        random_name = "".join(random.choice(string.ascii_lowercase) for i in range(8))
         techno = Technology(
             position=1,
             name=random_name,
@@ -161,15 +160,13 @@ class Technology(db.Model):
             max_machining_path_z_b=1,
             max_machining_path_z_c=1,
             max_machining_path_z_d=1,
-
-            hauptzeit_tn = 1
-            ruestzeit_tr = 1
-            werkzeugwechselzeit_twz = 1
-            werkstückwechselzeit_twst =1
-            losgroesse_nl = 1
-            standmenge_nwz = 1 #Standmenge Werkzeug
-            fertigungsmittelnr_xfm = 1
-
+            hauptzeit_tn=1,
+            ruestzeit_tr=1,
+            werkzeugwechselzeit_twz=1,
+            werkstückwechselzeit_twst=1,
+            losgroesse_nl=1,
+            standmenge_nwz=1,
+            fertigungsmittelnr_xfm=1,
             alttechnologie=1,
             verknüpfung=1,
         )
