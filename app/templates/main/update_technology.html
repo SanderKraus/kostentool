@@ -36,10 +36,10 @@
       <div class="col-sm-3 col-12 p-4">
         <div class="input-container py-3 px-2">
           <div class="form-group">
-            <input type="text" name="cb00" value="{{technologie.name}}"required> </th>
+            <input type="text" name="cb00" value="{{technologie.name}}" required> </th>
           </div>
           <div class="form-group">
-            <input type="text" name="position1" value="{{technologie.position}}" >
+            <input type="text" name="position1" value="{{technologie.position}}">
           </div>
           <button class="btn btn-primary mx-auto w-100 mt-2" type="submit">
             Änderung Speichern
@@ -67,112 +67,82 @@
                 </tr>
               </thead>
               <tbody>
-            <tr>
-                <th>Max. Bearbeitungsweg in x</th>
-                <th><input type="text" name="cb11" value="{{technologie.max_machining_path_x_a}}" required></th>
-                <th><input type="text" name="cb12" value="{{technologie.max_machining_path_x_b}}" required></th>
-                <th><input type="text" name="cb13" value="{{technologie.max_machining_path_x_c}}" required></th>
-                <th><input type="text" name="cb14" value="{{technologie.max_machining_path_x_d}}" required></th>
-            </tr>
-            <tr>
-                <th>Max. Bearbeitungsweg in y</th>
-                <th><input type="text" name="cb21" value="{{technologie.max_machining_path_y_a}}" required></th>
-                <th><input type="text" name="cb22" value="{{technologie.max_machining_path_y_b}}" required></th>
-                <th><input type="text" name="cb23" value="{{technologie.max_machining_path_y_c}}" required></th>
-                <th><input type="text" name="cb24" value="{{technologie.max_machining_path_y_d}}" required></th>
-            </tr>
-            <tr>
-                <th>Max. Bearbeitungsweg in z</th>
-                <th><input type="text" name="cb31" value="{{technologie.max_machining_path_z_a}}" required></th>
-                <th><input type="text" name="cb32" value="{{technologie.max_machining_path_z_b}}" required></th>
-                <th><input type="text" name="cb33" value="{{technologie.max_machining_path_z_c}}" required></th>
-                <th><input type="text" name="cb34" value="{{technologie.max_machining_path_z_d}}" required></th>
-            </tr>
-            <tr>
-                <th>Formtoleranz</th>
-                <th><input type="text" name="cb41" value="{{technologie.shape_tolerance_a}}" required></th>
-                <th><input type="text" name="cb42" value="{{technologie.shape_tolerance_b}}" required></th>
-                <th><input type="text" name="cb43" value="{{technologie.shape_tolerance_c}}" required></th>
-                <th><input type="text" name="cb44" value="{{technologie.shape_tolerance_d}}" required></th>
-            </tr>
-            <tr>
-                <th>Rauheit</th>
-                <th><input type="text" name="cb51" value="{{technologie.roughness_a}}" required ></th>
-                <th><input type="text" name="cb52" value="{{technologie.roughness_b}}" required></th>
-                <th><input type="text" name="cb53" value="{{technologie.roughness_c}}" required></th>
-                <th><input type="text" name="cb54" value="{{technologie.roughness_d}}" required></th>
-            </tr>
-
-                <!--<tr>
-
-                  <td>Max. Bearbeitungsweg in x</td>
-                  {% for field in form if "_x" in field.name %}
-                  <td>{{field}}</td>
-                  {% endfor %}
+                <tr>
+                  <th>Max. Bearbeitungsweg in x</th>
+                  <th><input type="text" name="cb11" value="{{technologie.max_machining_path_x_a}}" required></th>
+                  <th><input type="text" name="cb12" value="{{technologie.max_machining_path_x_b}}" required></th>
+                  <th><input type="text" name="cb13" value="{{technologie.max_machining_path_x_c}}" required></th>
+                  <th><input type="text" name="cb14" value="{{technologie.max_machining_path_x_d}}" required></th>
                 </tr>
                 <tr>
-                  <td>Max. Bearbeitungsweg in y</td>
-                  {% for field in form if "y" in field.name %}
-                  <td>{{field}}</td>
-                  {% endfor %}
+                  <th>Max. Bearbeitungsweg in y</th>
+                  <th><input type="text" name="cb21" value="{{technologie.max_machining_path_y_a}}" required></th>
+                  <th><input type="text" name="cb22" value="{{technologie.max_machining_path_y_b}}" required></th>
+                  <th><input type="text" name="cb23" value="{{technologie.max_machining_path_y_c}}" required></th>
+                  <th><input type="text" name="cb24" value="{{technologie.max_machining_path_y_d}}" required></th>
                 </tr>
                 <tr>
-                  <td>Max. Bearbeitungsweg in z</td>
-                  {% for field in form if "z" in field.name %}
-                  <td>{{field}}</td>
-                  {% endfor %}
+                  <th>Max. Bearbeitungsweg in z</th>
+                  <th><input type="text" name="cb31" value="{{technologie.max_machining_path_z_a}}" required></th>
+                  <th><input type="text" name="cb32" value="{{technologie.max_machining_path_z_b}}" required></th>
+                  <th><input type="text" name="cb33" value="{{technologie.max_machining_path_z_c}}" required></th>
+                  <th><input type="text" name="cb34" value="{{technologie.max_machining_path_z_d}}" required></th>
                 </tr>
                 <tr>
-                  <td>Formtoleranz</td>
-                  {% for field in form if field.name.startswith("shape") %}
-                  <td>{{field}}</td>
-                  {% endfor %}
+                  <th>Formtoleranz</th>
+                  <th><input type="text" name="cb41" value="{{technologie.shape_tolerance_a}}" required></th>
+                  <th><input type="text" name="cb42" value="{{technologie.shape_tolerance_b}}" required></th>
+                  <th><input type="text" name="cb43" value="{{technologie.shape_tolerance_c}}" required></th>
+                  <th><input type="text" name="cb44" value="{{technologie.shape_tolerance_d}}" required></th>
                 </tr>
                 <tr>
-                  <td>Rauheit</td>
-                  {% for field in form if field.name.startswith("roughness") %}
-                  <td>{{field}}</td>
-                  {% endfor %}
-                </tr>-->
+                  <th>Rauheit</th>
+                  <th><input type="text" name="cb51" value="{{technologie.roughness_a}}" required></th>
+                  <th><input type="text" name="cb52" value="{{technologie.roughness_b}}" required></th>
+                  <th><input type="text" name="cb53" value="{{technologie.roughness_c}}" required></th>
+                  <th><input type="text" name="cb54" value="{{technologie.roughness_d}}" required></th>
+                </tr>
               </tbody>
             </table>
-              <table border="3" align="center">
-                    <tr>
-                        <th>Kontur (Feature 1)</th>
-                        <th>Input</th>
-                        <th>Output</th>
-                    </tr>
-                    <tr>
-                        <th>Länge</th>
-                        <td><input type="text" name="input1" value="{{ fct.laenge_ein }}">[mm]</td>
-                        <td><input type="text" name="check1" value="{{ fct.laenge }}">[mm]</td></tr>
-                    <tr>
-                        <th>Breite</th>
-                        <td><input type="text" name="input2" value="{{ fct.breite_ein}}">[mm]</td>
-                        <td><input type="text" name="check2" value="{{ fct.breite }}">[mm]</td>
-                    </tr>
-                    <tr>
-                        <th>Höhe</th>
-                        <td><input type="text" name="input3" value="{{ fct.hoehe_ein }}">[mm]</td>
-                        <td><input type="text" name="check3" value="{{ fct.hoehe }}">[mm]</td>
-                    </tr>
-                    <tr>
-                        <th>Rauheit</th>
-                        <td><input type="text" name="input4" value="{{ fct.rauheit_ein }}">[µm]</td>
-                        <td><input type="text" name="check4" value="{{ fct.rauheit }}">[µm]</td>
-                    </tr>
-                    <tr>
-                        <th>Bohrung (Feature 2)</th>
-                        <th>Input</th>
-                        <th>Output</th>
-
-                    </tr>
-                    <tr>
-                        <th>Durchmesser</th>
-                        <td><input type="text" name="input5" value="{{ fct.durchmesser_ein }}">[mm]</td>
-                        <td><input type="text" name="check5" value="{{ fct.durchmesser }}">[mm]</td>
-                    </tr>
-                </table>
+            <div class="table-container">
+              <table class="table table-hover border border-info">
+                <tr>
+                  <th>Kontur (Feature 1)</th>
+                  <th>Input</th>
+                  <th>Output</th>
+                </tr>
+                <tr>
+                  <th>Länge</th>
+                  <td><input type="text " name="input1" value="{{ fct.laenge_ein }}">[mm]</td>
+                  <td><input type="text" name="check1" value="{{ fct.laenge }}">[mm]</td>
+                </tr>
+                <tr>
+                  <th>Breite</th>
+                  <td><input type="text" name="input2" value="{{ fct.breite_ein}}">[mm]</td>
+                  <td><input type="text" name="check2" value="{{ fct.breite }}">[mm]</td>
+                </tr>
+                <tr>
+                  <th>Höhe</th>
+                  <td><input type="text" name="input3" value="{{ fct.hoehe_ein }}">[mm]</td>
+                  <td><input type="text" name="check3" value="{{ fct.hoehe }}">[mm]</td>
+                </tr>
+                <tr>
+                  <th>Rauheit</th>
+                  <td><input type="text" name="input4" value="{{ fct.rauheit_ein }}">[µm]</td>
+                  <td><input type="text" name="check4" value="{{ fct.rauheit }}">[µm]</td>
+                </tr>
+                <tr>
+                  <th>Bohrung (Feature 2)</th>
+                  <th>Input</th>
+                  <th>Output</th>
+                </tr>
+                <tr>
+                  <th>Durchmesser</th>
+                  <td><input type="text" name="input5" value="{{ fct.durchmesser_ein }}">[mm]</td>
+                  <td><input type="text" name="check5" value="{{ fct.durchmesser }}">[mm]</td>
+                </tr>
+              </table>
+            </div>
           </div>
         </div>
       </div>

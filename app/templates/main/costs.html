@@ -103,23 +103,22 @@
                         <table class="table table-striped table-responsive">
                             <tr>
                                 <th></th>
-                                {%for names in names %}
-                                <th colspan="2" style="text-align: center">{{ names.name }}</th>
+                                {%for titles in titles %}
+                                <th colspan="2" style="text-align: center">{{ titles.name }}</th>
                                 {% endfor %}
                                 <th style="text-align: center">Fertigungsergebnis</th>
                                 <th style="text-align: center">Produktanforderungen</th>
                             </tr>
                             <tr>
                                 <th></th>
-                                {%for table in tables %}
+                                {%for tables in tables %}
                                 <th>Input</th>
                                 <th>Output</th>
                                 {% endfor %}
-
                             </tr>
                             <tr>
                                 <th><u>Kontur (F1)</u></th>
-                                {%for table in tables %}
+                                {%for tables in tables %}
                                 {% if not (tables.breite == '' and tables.hoehe == '' and tables.laenge == '' and
                                 tables.rauheit ==
                                 '') %}

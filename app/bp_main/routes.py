@@ -93,6 +93,9 @@ def cost():
     tables = dataft.to_html(classes="dataft")
     titles = dataft.columns.values
 
+    print(tables)
+    print(titles)
+
     return render_template(
         "main/costs.html",
         dataft=dataft,

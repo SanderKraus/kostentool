@@ -54,46 +54,7 @@ class Tool(db.Model):
         session.add(tool)
         session.commit()
 
-# class Feature(db.Model):
-#    name = db.Column(db.String(), unique=True, nullable=False)
-#    classifier = db.Column(db.String(), nullable=False)
-#    prismatic = db.Column()
-#    positve = db.Column()
-#    ebenheit = db.Column()
-#    paralellität = db.Column()
-#    position = db.Column()
-#    bohrungsground = db.Column()
-#    gewindeart = db.Column()
-#    durchmesser = db.Column()
-#    durchmersserplus = db.Column()
-#    durchmesserminus = db.Column()
-#    steigung = db.Column()
-#    laenge = db.Column()
-#    laengeplus = db.Column()
-#    laengeminus = db.Column()
-#    tiefe = db.Column()
-#    tiefeplus = db.Column()
-#    tiefeminus = db.Column()
-#    breite = db.Column()
-#    breiteplus = db.Column()
-#    breiteminus = db.Column()
-#    hoehe = db.Column()
-#    hoeheplus = db.Column()
-#    hoeheminus = db.Column()
-#    eckradius = db.Column()
-#    breitefuss = db.Column()
-#    breitefussplus = db.Column()
-#    breitefussminus = db.Column()
-#    tiefefuss = db.Column()
-#    tiefefussplus = db.Column()
-#    tiefefussminus = db.Column()
-#    winkel = db.Column()
-#    werkstoffbezeichung = db.Column()
-#    created_on = db.Column(db.DateTime, server_default=db.func.now())
-#    updated_on = db.Column(
-#        db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
 
-# Technologiedatenbank
 
 class FCT(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -154,6 +115,17 @@ class Technology(db.Model):
     max_machining_path_z_b = db.Column(db.Integer)
     max_machining_path_z_c = db.Column(db.Integer)
     max_machining_path_z_d = db.Column(db.Integer)
+
+    #Kostentool
+    hauptzeit_tn = db.Column(db.Integer)
+    ruestzeit_tr = db.Column(db.Integer)
+    werkzeugwechselzeit_twz = db.Column(db.Integer)
+    werkstückwechselzeit_twst = db.Column(db.Integer)
+    losgroesse_nl = db.Column(db.Integer)
+    standmenge_nwz = db.Column(db.Integer) #Standmenge Werkzeug
+    fertigungsmittelnr_xfm = db.Column(db.Integer) #Anzahl der Fertigungsmittel
+
+
     capability = db.Column(db.Integer)
     alttechnologie = db.Column(db.Integer)
     verknüpfung = db.Column(db.Integer)
@@ -189,6 +161,15 @@ class Technology(db.Model):
             max_machining_path_z_b=1,
             max_machining_path_z_c=1,
             max_machining_path_z_d=1,
+
+            hauptzeit_tn = 1
+            ruestzeit_tr = 1
+            werkzeugwechselzeit_twz = 1
+            werkstückwechselzeit_twst =1
+            losgroesse_nl = 1
+            standmenge_nwz = 1 #Standmenge Werkzeug
+            fertigungsmittelnr_xfm = 1
+
             alttechnologie=1,
             verknüpfung=1,
         )
