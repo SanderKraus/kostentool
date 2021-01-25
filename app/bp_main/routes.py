@@ -152,6 +152,13 @@ def cost():
     print(Fertigungskosten)
     print(data_tech_ft)
 
+    fertigungssystemzeit = data_tech_ft["zeit_einheit_prozess_te"].sum()
+    fertigungssystemkosten = data_tech_ft["Fertigungskosten"].sum()
+    print(fertigungssystemkosten)
+    print(fertigungssystemzeit)
+
+    x = data_tech_ft
+
     return render_template(
         "main/costs.html",
         dataft=dataft,
@@ -160,6 +167,9 @@ def cost():
         tables=tables,
         titles=titles,
         tool=tool,
+        fertigungssystemzeit=fertigungssystemzeit,
+        fertigungssystemkosten=fertigungssystemkosten,
+        x=x,
     )
 
 

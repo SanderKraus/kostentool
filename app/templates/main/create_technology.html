@@ -104,75 +104,130 @@
                 <th><input type="text" name="c53" required></th>
                 <th><input type="text" name="c54" required></th>
               </tr>
-              <tr>
-                <th>Zeit je Einheit im Prozess</th>
-                <th><input type="text" name="c61" required></th>
-                <th><input type="text" name="c62" required></th>
-                <th><input type="text" name="c63" required></th>
-                <th><input type="text" name="c64" required></th>
-                <th><input type="text" name="c65" required></th>
-                <th><input type="text" name="c66" required></th>
-                <th><input type="text" name="c67" required></th>
-              </tr>
-              <tr>
-                <th>Maschinenspezifische Daten zur Bestimmung der Fertigungskosten</th>
-                <th><input type="text" name="c71" required></th>
-                <th><input type="text" name="c72" required></th>
-                <th><input type="text" name="c73" required></th>
-                <th><input type="text" name="c74" required></th>
-                <th><input type="text" name="c75" required></th>
-                <th><input type="text" name="c76" required></th>
-                <th><input type="text" name="c77" required></th>
-                <th><input type="text" name="c78" required></th>
-                <th><input type="text" name="c79" required></th>
-                <th><input type="text" name="c791" required></th>
-                <th><input type="text" name="c792" required></th>
-              </tr>
-            </table>
-            Position im Fertigungssystem:<input type="text" name="position" required>
-            <br>
+              Position im Fertigungssystem:<input type="text" name="position" required>
+              <br>
+              <table class="table table-hover" border="3" align="center">
+                <tr>
+                  <th></th>
+                  <th>Zeit je Einheit im Prozess</th>
+                </tr>
+                <tr>
+                  <th>hauptzeit_tn</th>
+                  <th><input type="text" name="c61" required></th>
+                </tr>
+                <tr>
+                  <th>ruestzeit_tr</th>
+                  <th><input type="text" name="c62" required></th>
+                </tr>
+                <tr>
+                  <th>werkzeugwechselzeit_twz</th>
+                  <th><input type="text" name="c63" required></th>
+                </tr>
+                <tr>
+                  <th>werkstückwechselzeit_twst</th>
+                  <th><input type="text" name="c64" required></th>
+                </tr>
+                <tr>
+                  <th>losgroesse_nl</th>
+                  <th><input type="text" name="c65" required></th>
+                </tr>
+                <tr>
+                  <th>standmenge_nwz</th>
+                  <th><input type="text" name="c66" required></th>
+                </tr>
+                <tr>
+                  <th>fertigungsmittelnr_xfm</th>
+                  <th><input type="text" name="c67" required></th>
+                </tr>
+              </table>
+              <table class="table table-hover" border="3" align="center">
+                <tr>
+                  <th></th>
+                  <th>Maschinenspezifische Daten zur Bestimmung der Fertigungskosten</th>
+                </tr>
+                <tr>
+                  <th>anschafftungwert_AW</th>
+                  <th><input type="text" name="c71" required></th>
+                </tr>
+                <tr>
+                  <th>verkaufserloes_VE</th>
+                  <th><input type="text" name="c72" required></th>
+                </tr>
+                <tr>
+                  <th>abwicklungsdauer_ta</th>
+                  <th><input type="text" name="c73" required></th>
+                </tr>
+                <tr>
+                  <th>raumkosten_kr</th>
+                  <th><input type="text" name="c74" required></th>
+                </tr>
+                <tr>
+                  <th>instandhaltungskosten_ki</th>
+                  <th><input type="text" name="c75" required></th>
+                </tr>
+                <tr>
+                  <th>energiekosten_ke</th>
+                  <th><input type="text" name="c76" required></th>
+                </tr>
+                <tr>
+                  <th>zinssatz_z</th>
+                  <th><input type="text" name="c77" required></th>
+                </tr>
+                <tr>
+                  <th>maschinenlaufzeit_Tn</th>
+                  <th><input type="text" name="c78" required></th>
+                </tr>
+                <tr>
+                  <th> lohnkostenanteilig_Klh</th>
+                  <th><input type="text" name="c79" required></th>
+                </tr>
+                <tr>
+                  <th>werkzeugkosten_Kwt</th>
+                  <th><input type="text" name="c791" required></th>
+                </tr>
+                <tr>
+                  <th>restfertigungsgemeinkosten_Kx</th>
+                  <th><input type="text" name="c792" required></th>
+                </tr>
+              </table>
+              <table class="table table-hover" border="3" align="center">
+                <tr>
+                  <th>Kontur (Feature 1)</th>
+                  <th>Input</th>
+                  <th>Output</th>
+                </tr>
+                <tr>
+                  <th>Länge</th>
+                  <td><input type="text" name="input1">[mm]</td>
+                  <td><input type="text" name="check1">[mm]</td>
+                </tr>
+                <tr>
+                  <th>Breite</th>
+                  <td><input type="text" name="input2">[mm]</td>
+                  <td><input type="text" name="check2">[mm]</td>
+                </tr>
+                <tr>
+                  <th>Höhe</th>
+                  <td><input type="text" name="input3">[mm]</td>
+                  <td><input type="text" name="check3">[mm]</td>
+                </tr>
+                <tr>
+                  <th>Rauheit</th>
+                  <td><input type="text" name="input4">[µm]</td>
+                  <td><input type="text" name="check4">[µm]</td>
+                </tr>
+                <tr>
+                  <th>Bohrung (Feature 2)</th>
+                  <th>Input</th>
+                  <th>Output</th>
 
-
-
-            <table class="table table-hover" border="3" align="center">
-              <tr>
-                <th>Kontur (Feature 1)</th>
-                <th>Input</th>
-                <th>Output</th>
-
-              </tr>
-              <tr>
-                <th>Länge</th>
-                <td><input type="text" name="input1">[mm]</td>
-                <td><input type="text" name="check1">[mm]</td>
-              </tr>
-              <tr>
-                <th>Breite</th>
-                <td><input type="text" name="input2">[mm]</td>
-                <td><input type="text" name="check2">[mm]</td>
-              </tr>
-              <tr>
-                <th>Höhe</th>
-                <td><input type="text" name="input3">[mm]</td>
-                <td><input type="text" name="check3">[mm]</td>
-              </tr>
-              <tr>
-                <th>Rauheit</th>
-                <td><input type="text" name="input4">[µm]</td>
-                <td><input type="text" name="check4">[µm]</td>
-              </tr>
-              <tr>
-                <th>Bohrung (Feature 2)</th>
-                <th>Input</th>
-                <th>Output</th>
-
-              </tr>
-              <tr>
-                <th>Durchmesser</th>
-                <td><input type="text" name="input5">[mm]</td>
-                <td><input type="text" name="check5">[mm]</td>
-              </tr>
-            </table>
+                </tr>
+                <tr>
+                  <th>Durchmesser</th>
+                  <td><input type="text" name="input5">[mm]</td>
+                  <td><input type="text" name="check5">[mm]</td>
+                </tr>
+              </table>
           </form>
         </div>
       </div>

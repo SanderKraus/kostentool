@@ -132,6 +132,95 @@
             <div class="table-container">
               <table class="table table-hover border border-info">
                 <tr>
+                  <th></th>
+                  <th>Zeit je Einheit im Prozess</th>
+                </tr>
+                <tr>
+                  <th>hauptzeit_tn</th>
+                  <th><input type="text" name="cb61" value="{{ technologie.hauptzeit_tn}}" required></th>
+                </tr>
+                <tr>
+                  <th>ruestzeit_tr</th>
+                  <th><input type="text" name="cb62" value="{{ technologie.ruestzeit_tr}}" required></th>
+                </tr>
+                <tr>
+                  <th>werkzeugwechselzeit_twz</th>
+                  <th><input type="text" name="cb63" value="{{ technologie.werkzeugwechselzeit_twz}}" required></th>
+                </tr>
+                <tr>
+                  <th>werkstückwechselzeit_twst</th>
+                  <th><input type="text" name="cb64" value="{{ technologie.werkstückwechselzeit_twst}}" required></th>
+                </tr>
+                <tr>
+                  <th>losgroesse_nl</th>
+                  <th><input type="text" name="cb65" value="{{ technologie.losgroesse_nl}}" required></th>
+                </tr>
+                <tr>
+                  <th>standmenge_nwz</th>
+                  <th><input type="text" name="cb66" value="{{ technologie.standmenge_nwz}}" required></th>
+                </tr>
+                <tr>
+                  <th>fertigungsmittelnr_xfm</th>
+                  <th><input type="text" name="cb67" value="{{ technologie.fertigungsmittelnr_xfm}}" required></th>
+                </tr>
+              </table>
+            </div>
+            <div class="table-container">
+              <table class="table table-hover border border-info">
+                <tr>
+                  <th></th>
+                  <th>Maschinenspezifische Daten zur Bestimmung der Fertigungskosten</th>
+                </tr>
+                <tr>
+                  <th>anschafftungwert_AW</th>
+                  <th><input type="text" name="cb71" value="{{ technologie.anschafftungwert_AW}}" required></th>
+                  </th>
+                </tr>
+                <tr>
+                  <th>verkaufserloes_VE</th>
+                  <th><input type="text" name="cb72" value="{{ technologie.verkaufserloes_VE}}" required></th>
+                </tr>
+                <tr>
+                  <th>abwicklungsdauer_ta</th>
+                  <th><input type="text" name="cb73" value="{{ technologie.abwicklungsdauer_ta}}" required></th>
+                </tr>
+                <tr>
+                  <th>raumkosten_kr</th>
+                  <th><input type="text" name="cb74" value="{{ technologie.raumkosten_kr}}" required></th>
+                </tr>
+                <tr>
+                  <th>instandhaltungskosten_ki</th>
+                  <th><input type="text" name="cb75" value="{{ technologie.instandhaltungskosten_ki}}" required></th>
+                </tr>
+                <tr>
+                  <th>energiekosten_ke</th>
+                  <th><input type="text" name="cb76" value="{{ technologie.energiekosten_ke}}" required></th>
+                </tr>
+                <tr>
+                  <th>zinssatz_z</th>
+                  <th><input type="text" name="cb77" value="{{ technologie.zinssatz_z}}" required></th>
+                </tr>
+                <tr>
+                  <th>maschinenlaufzeit_Tn</th>
+                  <th><input type="text" name="cb78" value="{{ technologie.maschinenlaufzeit_Tn}}" required></th>
+                </tr>
+                <tr>
+                  <th>lohnkostenanteilig_Klh</th>
+                  <th><input type="text" name="cb79" value="{{ technologie.lohnkostenanteilig_Klh}}" required></th>
+                </tr>
+                <tr>
+                  <th>werkzeugkosten_Kwt</th>
+                  <th><input type="text" name="cb791" value="{{ technologie.werkzeugkosten_Kwt}}" required></th>
+                </tr>
+                <tr>
+                  <th>restfertigungsgemeinkosten_Kx</th>
+                  <th><input type="text" name="cb792" value="{{ technologie.restfertigungsgemeinkosten_Kx}}" required>
+                </tr>
+              </table>
+            </div>
+            <div class="table-container">
+              <table class="table table-hover border border-info">
+                <tr>
                   <th>Kontur (Feature 1)</th>
                   <th>Input</th>
                   <th>Output</th>
