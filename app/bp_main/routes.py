@@ -1,3 +1,4 @@
+from sqlalchemy.orm import noload
 from app import db
 from flask_login import login_required
 import pandas as pd
@@ -76,26 +77,80 @@ def cost():
     conn = sqlite3.connect("app.db")
     cur = conn.cursor()
 
-    cursor_dat = cur.execute("SELECT * FROM FCT")
-    columns = [col[0] for col in cursor_dat.description]  # Liste alle Variablennamen
+    # technology dataframe
+    cursor_dat_tech = cur.execute("SELECT * FROM TECHNOLOGY;")
+    columns_tech = [col[0] for col in cursor_dat_tech.description]
+    data_tech = pd.DataFrame.from_records(
+        cursor_dat_tech.fetchall(), columns=columns_tech
+    )
+    # print(data_tech)
 
+    # alle Zeilen löschen, die keine Position haben
+    x = data_tech["position"] != ""
+    y = data_tech[x]
+    data_tech_ft = y.sort_values(by="position", ascending=True)
+    print(data_tech_ft)
+
+    # fct dataframe
+    cursor_dat = cur.execute("SELECT * FROM FCT")  # FCT
+    print(cursor_dat)
+    columns = [col[0] for col in cursor_dat.description]  # Liste alle Variablennamen
     data = pd.DataFrame.from_records(cursor_dat.fetchall(), columns=columns)
+    # print(data)
 
     # alle Zeilen löschen, die keine Position haben
     x = data["position"] != ""
     y = data[x]
     dataft = y.sort_values(by="position", ascending=True)
-    print(dataft)
 
     names = dataft["name"]
 
-    print(names)
+    # print(names)
 
     tables = dataft.to_html(classes="dataft")
     titles = dataft.columns.values
 
-    print(tables)
-    print(titles)
+    # print(tables)
+    # print(titles)
+
+    #  zeit je einheit prozess te muss string sein (float() muss noch eingestellt werden)
+    tn = data_tech_ft.hauptzeit_tn
+    tr = data_tech_ft.ruestzeit_tr
+    nl = data_tech_ft.losgroesse_nl
+    twz = data_tech_ft.werkzeugwechselzeit_twz
+    nwz = data_tech_ft.werkstückwechselzeit_twst
+    twst = data_tech_ft.werkstückwechselzeit_twst
+    xfm = data_tech_ft.fertigungsmittelnr_xfm
+
+    AW = data_tech_ft.anschafftungwert_AW
+    VE = data_tech_ft.verkaufserloes_VE
+    te = data_tech_ft.abwicklungsdauer_ta
+    kr = data_tech_ft.raumkosten_kr
+    ki = data_tech_ft.instandhaltungskosten_ki
+    ke = data_tech_ft.energiekosten_ke
+    z = data_tech_ft.zinssatz_z
+    Tn = data_tech_ft.maschinenlaufzeit_Tn
+    Klh = data_tech_ft.lohnkostenanteilig_Klh
+    Kwt = data_tech_ft.werkzeugkosten_Kwt
+    Kx = data_tech_ft.restfertigungsgemeinkosten_Kx
+
+    t2 = twz / nwz
+    t1 = tr / nl
+
+    zeit_einheit_prozess_te = (tn + t1 + t2 + twst) / xfm  # vektor
+    data_tech_ft["zeit_einheit_prozess_te"] = zeit_einheit_prozess_te
+
+    Kl = Klh * te
+    ka = (AW - VE) / te
+    kz = ((AW + VE) / 2) * z
+
+    Kmh = (ka + kz + ki + kr + ke) / Tn
+    Fertigungskosten = Kmh * te + Kl + Kwt / nwz + Kx
+    data_tech_ft["Fertigungskosten"] = Fertigungskosten
+
+    print(zeit_einheit_prozess_te)
+    print(Fertigungskosten)
+    print(data_tech_ft)
 
     return render_template(
         "main/costs.html",
@@ -671,6 +726,20 @@ def create_technology():
         losgroesse_nl = request.form["c65"]
         standmenge_nwz = request.form["c66"]
         fertigungsmittelnr_xfm = request.form["c67"]
+
+        anschafftungwert_AW = request.form["c71"]
+        verkaufserloes_VE = request.form["c72"]
+        abwicklungsdauer_ta = request.form["c73"]
+        raumkosten_kr = request.form["c74"]
+        instandhaltungskosten_ki = request.form["c75"]
+        energiekosten_ke = request.form["c76"]
+        zinssatz_z = request.form["c77"]
+        maschinenlaufzeit_Tn = request.form["c78"]
+
+        lohnkostenanteilig_Klh = request.form["c79"]
+        werkzeugkosten_Kwt = request.form["c791"]
+        restfertigungsgemeinkosten_Kx = request.form["c792"]
+
         alttechnologie = "N"
         verknüpfung = "N"
         capability = "0"
@@ -700,13 +769,24 @@ def create_technology():
             alttechnologie=alttechnologie,
             verknüpfung=verknüpfung,
             capability=capability,
-            # hauptzeit_tn = hauptzeit_tn,
-            # ruestzeit_tr = ruestzeit_tr,
-            # werkzeugwechselzeit_twz = werkzeugwechselzeit_twz,
-            # werkzeugwechselzeit_twz = werkzeugwechselzeit_twz,
-            # losgroesse_nl = losgroesse_nl,
-            # standmenge_nwz = standmenge_nwz,
-            # fertigungsmittelnr_xfm = fertigungsmittelnr_xfm
+            hauptzeit_tn=hauptzeit_tn,
+            ruestzeit_tr=ruestzeit_tr,
+            werkstückwechselzeit_twst=werkstückwechselzeit_twst,
+            werkzeugwechselzeit_twz=werkzeugwechselzeit_twz,
+            losgroesse_nl=losgroesse_nl,
+            standmenge_nwz=standmenge_nwz,
+            fertigungsmittelnr_xfm=fertigungsmittelnr_xfm,
+            anschafftungwert_AW=anschafftungwert_AW,
+            verkaufserloes_VE=verkaufserloes_VE,
+            abwicklungsdauer_ta=abwicklungsdauer_ta,
+            raumkosten_kr=raumkosten_kr,
+            instandhaltungskosten_ki=instandhaltungskosten_ki,
+            energiekosten_ke=energiekosten_ke,
+            zinssatz_z=zinssatz_z,
+            maschinenlaufzeit_Tn=maschinenlaufzeit_Tn,
+            lohnkostenanteilig_Klh=lohnkostenanteilig_Klh,
+            werkzeugkosten_Kwt=werkzeugkosten_Kwt,
+            restfertigungsgemeinkosten_Kx=restfertigungsgemeinkosten_Kx,
         )
         db.session.add(new)
 
@@ -913,6 +993,24 @@ def create_alttechnology():
         roughness_b = request.form["ca52"]
         roughness_c = request.form["ca53"]
         roughness_d = request.form["ca54"]
+        hauptzeit_tn = request.form["ca61"]
+        ruestzeit_tr = request.form["ca62"]
+        werkzeugwechselzeit_twz = request.form["ca63"]
+        werkstückwechselzeit_twst = request.form["ca64"]
+        losgroesse_nl = request.form["ca65"]
+        standmenge_nwz = request.form["ca66"]
+        fertigungsmittelnr_xfm = request.form["ca67"]
+        anschafftungwert_AW = request.form["ca71"]
+        verkaufserloes_VE = request.form["ca72"]
+        abwicklungsdauer_ta = request.form["ca73"]
+        raumkosten_kr = request.form["ca74"]
+        instandhaltungskosten_ki = request.form["ca75"]
+        energiekosten_ke = request.form["ca76"]
+        zinssatz_z = request.form["ca77"]
+        maschinenlaufzeit_Tn = request.form["ca78"]
+        lohnkostenanteilig_Klh = request.form["ca79"]
+        werkzeugkosten_Kwt = request.form["ca791"]
+        restfertigungsgemeinkosten_Kx = request.form["ca792"]
         alttechnologie = "Y"
         verknüpfung = request.form["altft"]
         capability = "0"
@@ -942,6 +1040,24 @@ def create_alttechnology():
             alttechnologie=alttechnologie,
             verknüpfung=verknüpfung,
             capability=capability,
+            hauptzeit_tn=hauptzeit_tn,
+            ruestzeit_tr=ruestzeit_tr,
+            werkstückwechselzeit_twst=werkstückwechselzeit_twst,
+            werkzeugwechselzeit_twz=werkzeugwechselzeit_twz,
+            losgroesse_nl=losgroesse_nl,
+            standmenge_nwz=standmenge_nwz,
+            fertigungsmittelnr_xfm=fertigungsmittelnr_xfm,
+            anschafftungwert_AW=anschafftungwert_AW,
+            verkaufserloes_VE=verkaufserloes_VE,
+            abwicklungsdauer_ta=abwicklungsdauer_ta,
+            raumkosten_kr=raumkosten_kr,
+            instandhaltungskosten_ki=instandhaltungskosten_ki,
+            energiekosten_ke=energiekosten_ke,
+            zinssatz_z=zinssatz_z,
+            maschinenlaufzeit_Tn=maschinenlaufzeit_Tn,
+            lohnkostenanteilig_Klh=lohnkostenanteilig_Klh,
+            werkzeugkosten_Kwt=werkzeugkosten_Kwt,
+            restfertigungsgemeinkosten_Kx=restfertigungsgemeinkosten_Kx,
         )
         db.session.add(new)
 
@@ -1170,6 +1286,17 @@ def update_technology(id):
         technologie.losgroesse_nl = request.form["cb65"]
         technologie.standmenge_nwz = request.form["cb66"]
         technologie.fertigungsmittelnr_xfm = request.form["cb67"]
+        technologie.anschafftungwert_AW = request.form["cb71"]
+        technologie.verkaufserloes_VE = request.form["cb72"]
+        technologie.abwicklungsdauer_ta = request.form["cb73"]
+        technologie.raumkosten_kr = request.form["cb74"]
+        technologie.instandhaltungskosten_ki = request.form["cb75"]
+        technologie.energiekosten_ke = request.form["cb76"]
+        technologie.zinssatz_z = request.form["cb77"]
+        technologie.maschinenlaufzeit_Tn = request.form["cb78"]
+        technologie.lohnkostenanteilig_Klh = request.form["cb79"]
+        technologie.werkzeugkosten_Kwt = request.form["cb791"]
+        technologie.restfertigungsgemeinkosten_Kx = request.form["cb792"]
 
         fct.name = request.form["cb00"]
         fct.position = request.form["position1"]

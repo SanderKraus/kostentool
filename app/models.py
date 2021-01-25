@@ -125,6 +125,19 @@ class Technology(db.Model):
     standmenge_nwz = db.Column(db.Integer)  # Standmenge Werkzeug
     fertigungsmittelnr_xfm = db.Column(db.Integer)  # Anzahl der Fertigungsmittel
 
+    anschafftungwert_AW = db.Column(db.Integer)
+    verkaufserloes_VE = db.Column(db.Integer)
+    abwicklungsdauer_ta = db.Column(db.Integer)
+    raumkosten_kr = db.Column(db.Integer)
+    instandhaltungskosten_ki = db.Column(db.Integer)
+    energiekosten_ke = db.Column(db.Integer)
+    zinssatz_z = db.Column(db.Integer)
+    maschinenlaufzeit_Tn = db.Column(db.Integer)
+
+    lohnkostenanteilig_Klh = db.Column(db.Integer)
+    werkzeugkosten_Kwt = db.Column(db.Integer)
+    restfertigungsgemeinkosten_Kx = db.Column(db.Integer)
+
     capability = db.Column(db.Integer)
     alttechnologie = db.Column(db.Integer)
     verknüpfung = db.Column(db.Integer)
