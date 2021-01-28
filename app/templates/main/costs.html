@@ -96,179 +96,35 @@
         <div class="container text-white">
             <div class="jumbotron3 mt-3">
                 <div class="card-body">
-                    <h5 class="card-title">Kosten des Fertigungssystems
-                    </h5>
-
-                    <h3> Zeit des in der FCT-Table ausgewählten Fertigungssystems:<b class="Rot">{{
-                            fertigungssystemzeit }}</b></h3>
-                    <h3> Kosten des in der FCT-Table ausgewählten Fertigungssystems:<b class="Rot">{{
-                            fertigungssystemkosten }}</b></h3>
-                    <p class="card-text">
-                    </p>
-                    <div class="p-2">
-                        <table class="table table-striped table-responsive">
-
-                        </table>
-
+                    <div class="jumbotron2 mt-3 p-2 text-white">
+                        <p class="display-4"> Fertigungszeiten gesamt:</p>
+                        <p class="display-5"> {{ fertigungssystemzeit }} s</p>
+                        <p class="display-4"> Fertigungskosten gesamt:</p>
+                        <p class="display-5">{{ fertigungssystemkosten }} €</p>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="jumbotron4 row">
-        <div class="col-3 p-4">
-            <div class="jumbotron3">
-                <div class="card-body">
-                    <h5 class="card-title">Fertigungstechnologie</h5>
-                    <p class="card-text">Neue Fertigungstechnologie hinzufügen</p>
-                    <form action="/main/save" method="POST">
-                        <input type="button" class="w-100 btn btn-secondary" name="button" value="Hinzufügen"
-                            onclick="window.open(' /main/create_technology ', 'einNeuesFenster');">
-                    </form>
-                </div>
-            </div>
-            <div class="jumbotron3 mt-3">
-                <div class="card-body">
-                    <h5 class="card-title">Alternativtechnologie</h5>
-                    <p class="card-text">Neue alternative Fertigungstechnologie hinzufügen
-                    </p>
-                    <form action="/main/save" method="POST">
-                        <input type="button" class="w-100 btn btn-secondary" name="button" value="Hinzufügen"
-                            onclick="window.open(' /main/create_alttechnology ', 'einNeuesFenster');">
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="col-9 p-4">
-            <div class="jumbotron3">
-                <div class="card-body">
-                    <h5 class="card-title">Aktuelles Fertigungssystem</h5>
-                    <p class="card-text">Aktuelles Fertigungssystem mit einsetzbaren Alternativtechnologie
-                    </p>
-                    {% for techs in techs %}
-                    <div class="jumbotron4">
-                        <form action="/main/save" method="POST">
-                            <div class="jumbotron4">
-                                <div class="mt-1 p-2">
-                                    <h3><select class="w-100 jumbotron3" name="ft{{ loop.index }}"
-                                            id="ft{{ loop.index }}">
-                                            <optgroup label="Aktuelle Fertigungstechnologie">
-                                                {% if techs.capability == 1 %}
-                                                <option class="Gelb" value="{{ techs.id }}">{{ techs.name }}</option>
-                                                {% elif techs.capability == 2 %}
-                                                <option class="Grün" value="{{ techs.id }}">{{ techs.name }}</option>
-                                                {% elif techs.capability == 0 %}
-                                                <option class="Rot" value="{{ techs.id }}">{{ techs.name }}</option>
-                                                {% endif %}
-                                            </optgroup>
-                                            <optgroup label="Altrnative Fertigungstechnologie">
-                                                {% for alttech in alttech %}
-                                                {% if techs.id == alttech.verknüpfung and alttech.capability == 1 %}
-                                                <option class="Gelb" value="{{ alttech.id }}"> {{ alttech.name }}
-                                                </option>
-                                                {% elif techs.id == alttech.verknüpfung and alttech.capability == 2%}
-                                                <option class="Grün" value="{{ alttech.id }}"> {{ alttech.name }}
-                                                </option>
-                                                {% elif techs.id == alttech.verknüpfung and alttech.capability == 0%}
-                                                <option class="Rot" value="{{ alttech.id }}">{{ alttech.name }}</option>
-                                                {% endif %}
-                                                {% endfor %}
-                                            </optgroup>
-                                        </select>
-                                    </h3>
-                                </div>
-                            </div>
-                    </div>
-                    <font size="16"></font>
-                    {% endfor %}
-                </div>
-                <div class="jumbotron4 p-3 d-flex justify-content-center">
-                    <input type="submit" class="w-100 btn btn-primary" name="button" value="Eingabe bestätigen">
-                    </form>
-                </div>
-                <div class="jumbotron4 p-3">
-                    {% for techs in techs %}
-                    {% if techs.capability == 0 %}
-                    <h3> <b class="Rot">Folgende Technologien sind nicht fähig: {{ techs.name }}</b></h3>
-                    {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="jumbotron3 mt-3">
-                <div class="card-body">
-                    <h5 class="card-title">Datenbank der Fertigungstechnologien</h5>
-                    <p class="card-text">Datenbank der Fertigungstechnologien
-                    </p>
-                    <div class="tab-content table-container">
-                        <div class="tab-pane fade show active">
-                            {% if techs %}
-                            <!--<h3 class="p-3">Technologien</h3>-->
-                            <div class="p-2">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Position</th>
-                                        <th>Upload am</th>
-                                        <th>Verändert am</th>
-                                    </thead>
-                                    <tbody>
-                                        {% for tech in techs %}
-                                        <tr data-toggle="modal" data-target="#sanderModal">
-                                            <td>{{tech.id}}</td>
-                                            <td>{{tech.name}}</td>
-                                            <td>{{tech.position}}</td>
-                                            <td>{{tech.created_on}}</td>
-                                            <td>{{tech.updated_on}}</td>
-                                            <td>
-                                                <a href="{{url_for('main.update_technology', id=tech.id) }}"
-                                                    class="btn btn-light btn-sm">Edit</a>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="jumbotron3 mt-3">
-                <div class="card-body">
-                    <h5 class="card-title">Datenbank der Alternativttechnologien</h5>
-                    <p class="card-text">Datenbank der Alternativttechnologien
-                    </p>
-                    <div class="tab-content table-container">
-                        <div class="tab-pane fade show active">
-                            {% if alttech %}
-                            <!--<h3 class="p-3">Technologien</h3>-->
-                            <div class="p-2">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Upload am</th>
-                                        <th>Verändert am</th>
-                                    </thead>
-                                    <tbody>
-                                        {% for alttech in alttech %}
-                                        <tr data-toggle="modal" data-target="#sanderModal">
-                                            <td>{{alttech.id}}</td>
-                                            <td>{{alttech.name}}</td>
-                                            <td>{{alttech.position}}</td>
-                                            <td>{{alttech.created_on}}</td>
-                                            <td>{{alttech.updated_on}}</td>
-                                            <td>
-                                                <a href="{{url_for('main.update_technology', id=alttech.id) }}"
-                                                    class="btn btn-light btn-sm">Edit</a>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {% endif %}
+                    <div class="jumbotron3 mt-3 p-2 text-white">
+                        <div class="table table-bordered">
+                            <table class="table">
+                                <caption>Änderungszeiten und -kosten des ausgewählten Systems</caption>
+                                <thead>
+                                    <tr>
+                                        <td scope="col">#</td>
+                                        <th scope="col">Fertigungszeit</th>
+                                        <th scope="col">Fertigungskosten</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for key,value in x.iterrows() %}
+                                    <tr>
+                                        <th scope="row">{{
+                                            value['name'] }}</th>
+                                        <td>{{ value['zeit_einheit_prozess_te'] }} [s]
+                                        </td>
+                                        <td>{{ value['Fertigungskosten'] }} [€]</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

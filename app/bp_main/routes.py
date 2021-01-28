@@ -89,11 +89,11 @@ def cost():
     x = data_tech["position"] != ""
     y = data_tech[x]
     data_tech_ft = y.sort_values(by="position", ascending=True)
-    print(data_tech_ft)
+    # print(data_tech_ft)
 
     # fct dataframe
     cursor_dat = cur.execute("SELECT * FROM FCT")  # FCT
-    print(cursor_dat)
+    # print(cursor_dat)
     columns = [col[0] for col in cursor_dat.description]  # Liste alle Variablennamen
     data = pd.DataFrame.from_records(cursor_dat.fetchall(), columns=columns)
     # print(data)
@@ -114,48 +114,53 @@ def cost():
     # print(titles)
 
     #  zeit je einheit prozess te muss string sein (float() muss noch eingestellt werden)
-    tn = data_tech_ft.hauptzeit_tn
-    tr = data_tech_ft.ruestzeit_tr
-    nl = data_tech_ft.losgroesse_nl
-    twz = data_tech_ft.werkzeugwechselzeit_twz
-    nwz = data_tech_ft.werkstückwechselzeit_twst
-    twst = data_tech_ft.werkstückwechselzeit_twst
-    xfm = data_tech_ft.fertigungsmittelnr_xfm
+    tn = data_tech_ft.hauptzeit_tn  # s
+    tr = data_tech_ft.ruestzeit_tr  # s
+    nl = data_tech_ft.losgroesse_nl  # -
+    twz = data_tech_ft.werkzeugwechselzeit_twz  # s
+    nwz = data_tech_ft.standmenge_nwz  # wird auch Anzahl Werkstücke je Werkzeug -
+    twst = data_tech_ft.werkstückwechselzeit_twst  # s
+    xfm = data_tech_ft.fertigungsmittelnr_xfm  # -
 
-    AW = data_tech_ft.anschafftungwert_AW
-    VE = data_tech_ft.verkaufserloes_VE
-    te = data_tech_ft.abwicklungsdauer_ta
-    kr = data_tech_ft.raumkosten_kr
-    ki = data_tech_ft.instandhaltungskosten_ki
-    ke = data_tech_ft.energiekosten_ke
-    z = data_tech_ft.zinssatz_z
-    Tn = data_tech_ft.maschinenlaufzeit_Tn
-    Klh = data_tech_ft.lohnkostenanteilig_Klh
-    Kwt = data_tech_ft.werkzeugkosten_Kwt
-    Kx = data_tech_ft.restfertigungsgemeinkosten_Kx
+    AW = data_tech_ft.anschafftungwert_AW  # euro
+    VE = data_tech_ft.verkaufserloes_VE  # euro
+    ta = data_tech_ft.abwicklungsdauer_ta  # Abschreibungsdauer a
+    kr = data_tech_ft.raumkosten_kr  # €/a
+    ki = data_tech_ft.instandhaltungskosten_ki  # €/a
+    ke = data_tech_ft.energiekosten_ke  # €/a
+    z = data_tech_ft.zinssatz_z  # *0.01
+    Tn = data_tech_ft.maschinenlaufzeit_Tn  # h/a jährliche Maschinenlaufzeit 3200
+    Klh = data_tech_ft.lohnkostenanteilig_Klh  # €/h
+    Kwt = data_tech_ft.werkzeugkosten_Kwt  # kosten für neues Werkzeug €
+    Kx = data_tech_ft.restfertigungsgemeinkosten_Kx  # €
 
-    t2 = twz / nwz
-    t1 = tr / nl
+    t2 = twz / nwz  # [s]/[-]
+    t1 = tr / nl  # [s]/[-]
 
-    zeit_einheit_prozess_te = (tn + t1 + t2 + twst) / xfm  # vektor
+    zeit_einheit_prozess_te = (tn + t1 + t2 + twst) / xfm  # vektor [s]/[-]
     data_tech_ft["zeit_einheit_prozess_te"] = zeit_einheit_prozess_te
 
-    Kl = Klh * te
-    ka = (AW - VE) / te
-    kz = ((AW + VE) / 2) * z
+    Kl = Klh * zeit_einheit_prozess_te  # €/s
+    ka = (AW - VE) / ta  # €/a
+    kz = ((AW + VE) / 2) * z * 0.01  # €/a
 
-    Kmh = (ka + kz + ki + kr + ke) / Tn
-    Fertigungskosten = Kmh * te + Kl + Kwt / nwz + Kx
+    Kmh = (
+        ka + kz + ki + kr + ke
+    ) / Tn  # €/h               (€/a + €/a + €/a + €/a + €/a) / 3200 h/a
+    Fertigungskosten = (
+        Kmh * (zeit_einheit_prozess_te / 3600) + Kl + Kwt / nwz + Kx
+    )  # €         €/3600s * s + € + €
     data_tech_ft["Fertigungskosten"] = Fertigungskosten
 
-    print(zeit_einheit_prozess_te)
-    print(Fertigungskosten)
+    # print(zeit_einheit_prozess_te)
+    # print(Fertigungskosten)
     print(data_tech_ft)
 
     fertigungssystemzeit = data_tech_ft["zeit_einheit_prozess_te"].sum()
     fertigungssystemkosten = data_tech_ft["Fertigungskosten"].sum()
     print(fertigungssystemkosten)
     print(fertigungssystemzeit)
+    
 
     x = data_tech_ft
 
@@ -167,6 +172,8 @@ def cost():
         tables=tables,
         titles=titles,
         tool=tool,
+        zeit_einheit_prozess_te=zeit_einheit_prozess_te,
+        Fertigungskosten=Fertigungskosten,
         fertigungssystemzeit=fertigungssystemzeit,
         fertigungssystemkosten=fertigungssystemkosten,
         x=x,

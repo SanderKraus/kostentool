@@ -45,8 +45,247 @@
     color: rgba(0, 84, 159, 1);
   }
 </style>
+<div class="container">
+  <div class="jumbotron row">
+    <div class="container text-white text-center">
+      <h2 class="display-4 text-center pb-5">Neue Alternativtechnologie
+      </h2>
+    </div>
+    <form action="/main/create_alttechnology" method="POST">
+      <div class="row">
+        <div class="col-sm-3 col-12 p-4">
+          <div class="input-container py-3 px-2">
+            <div class="form-group">Name:
+              <input class="form-control" type="text" name="ca00" id="ca00" required></th>
+            </div>
+            <div class="form-group">
+              Alternative für die Technologie:
+              <select name="altft">
+                {% for technology in technology %}
+                <option value="{{technology.id}}">{{technology.name}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button class="btn btn-primary mx-auto w-100 mt-2" type="submit">
+              Alternativtechnologie hinzufügen
+            </button>
+            <button class="btn btn-secondary mx-auto w-100 mt-2" type="submit">
+              Abbrechen
+            </button>
+            <hr />
+          </div>
+        </div>
+        <div class="col-9 p-4">
+          <div class="table-container">
+            <div class="p-3">
+              <div class="table-responsive-lg">
+                <table class="table">
+                  <caption>Fertigungstoleranzen</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">a</th>
+                      <th scope="col">b</th>
+                      <th scope="col">c</th>
+                      <th scope="col">d</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Bearbeitungsweg in x [mm]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca11" required>
+                      </th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca12" required></th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca13" required></th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca14" required></th>
+                    </tr>
+                    <tr>
+                      <th scope="row">Bearbeitungsweg in y [mm]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca21" required></th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca22" required></th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca23" required></th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca24" required></th>
+                    </tr>
+                    <tr>
+                      <th scope="row">Bearbeitungsweg in z [mm]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca31" required></th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca32" required></th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca33" required></th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca34" required></th>
+                    </tr>
+                    <tr>
+                      <th scope="row">Formtoleranz in z [mm]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca41" required></th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca42" required></th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca43" required></th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca44" required></th>
+                    </tr>
+                    <tr>
+                      <th scope="row">Rauheit [µm]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca51" required>
+                      </th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca52" required>
+                      </th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca53" required>
+                      </th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca54" required>
+                      </th>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="table-responsive-lg">
+                <table class="table">
+                  <caption>Fertigungszeiten je Einheit </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col"></th>
+                      <th scope="col">#</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Hauptzeit tn [s]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca61" required></th>
+                      <th scope="row">Rüstzeit tr [s]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca62" required></th>
+                    </tr>
+                    <tr>
+                      <th scope="row">Werkzeugwechselzeit twz [s]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca63" required></th>
+                      <th scope="row">Werkstückwechselzeit twst [s]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca64" required></th>
+                    </tr>
+                    <tr>
+                      <th scope="row">Losgroesse nl [-]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca65" required></th>
+                      <th scope="row">Standmenge nwz [-]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca66" required></th>
+                    </tr>
+                    <tr>
+                      <th scope="row">Fertigungsmittelnr xfm [-]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca67" required></th>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="table-responsive-lg">
+                <table class="table">
+                  <caption>Maschinenspezifische Daten zur Bestimmung der Fertigungskosten
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col"></th>
+                      <th scope="col">#</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Anschafftungwert AW [€]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca71" required></th>
+                      <th scope="row">Verkaufserloes VE [€]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca72" required></th>
+                    </tr>
+                    <tr>
+                      <th scope="row">Abwicklungsdauer ta [s]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca73" required></th>
+                      <th scope="row">Raumkosten kr [€/Jahr]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca74" required></th>
+                    </tr>
+                    <tr>
+                      <th scope="row">Instandhaltungskosten ki [€/Jahr]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca75" required></th>
+                      <th scope="row">Energiekosten ke [€/Jahr]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca76" required></th>
+                    </tr>
+                    <tr>
+                      <th scope="row">Zinssatz z [Prozent]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca77" required>
+                      </th>
+                      <th scope="row">Maschinenlaufzeit Tn [h/Jahr]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca78" required></th>
+                    </tr>
+                    <tr>
+                      <th scope="row">Lohnkostenanteilig Klh [€/h]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca79" required>
+                      </th>
+                      <th scope="row">Werkzeugkosten Kwt [h/Jahr]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca791" required></th>
+                    </tr>
+                    <tr>
+                      <th scope="row">Restfertigungsgemeinkosten Kx [€]</th>
+                      <th><input class='form-control' style="width: 70px" type="text" name="ca792" required>
+                      </th>
+                  </tbody>
+                </table>
+              </div>
+              <div class="table-responsive-lg">
+                <table class="table">
+                  <caption>Input und Output
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Feature 1 (Kontur)</th>
+                      <th scope="col"></th>
+                      <th scope="col">Input</th>
+                      <th scope="col">Output</th>
+                    </tr>
+                  </thead>
+                  <tr>
+                    <td></td>
+                    <th scope="row">Länge [mm]</th>
+                    <td><input class='form-control' style="width: 70px" type="text " name="input1">[mm]</td>
+                    <td><input class='form-control' style="width: 70px" type="text" name="check1">[mm]</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <th scope="row">Breite [mm]</th>
+                    <td><input class='form-control' style="width: 70px" type="text" name="input2">[mm]</td>
+                    <td><input class='form-control' style="width: 70px" type="text" name="check2">[mm]</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <th scope="row">Höhe [mm]</th>
+                    <td><input class='form-control' style="width: 70px" type="text" name="input3">[mm]</td>
+                    <td><input class='form-control' style="width: 70px" type="text" name="check3">[mm]</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <th scope="row">Rauheit [µm]</th>
+                    <td><input class='form-control' style="width: 70px" type="text" name="input4">[µm]</td>
+                    <td><input class='form-control' style="width: 70px" type="text" name="check4">[µm]</td>
+                  </tr>
+                  <thead>
+                    <tr>
+                      <th scope="col">Feature 2 (Bohrung)</th>
+                      <th scope="col"></th>
+                      <th scope="col">Input</th>
+                      <th scope="col">Output</th>
+                    </tr>
+                  </thead>
+                  <tr>
+                    <td></td>
+                    <th scope="row">Durchmesser [mm]</th>
+                    <td><input class='form-control' style="width: 70px" type="text" name="input5">[mm]
+                    </td>
+                    <td><input class='form-control' style="width: 70px" type="text" name="check5">[mm]</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
-<body>
+
+<!-- <body>
   <div class="container">
     <div class="jumbotron row">
       <div class="container text-white text-center">
@@ -248,5 +487,5 @@
       </div>
     </div>
   </div>
-</body>
+</body> -->
 {% endblock %}
