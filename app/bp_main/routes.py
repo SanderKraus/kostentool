@@ -69,6 +69,44 @@ def seed():
 #  Business-Logic: Technologiekette modellieren
 #
 
+# vergleich Featureliste mit Technologien
+
+
+@main.route("featuretech", methods=["GET", "Post"])
+def technologyFeature():
+    tool = Tool.query.first()
+    conn = sqlite3.connect("app.db")
+    cur = conn.cursor()
+
+    cursor_dat_tech = cur.execute("SELECT * FROM TECHNOLOGY;")
+    columns_tech = [col[0] for col in cursor_dat_tech.description]
+    data_technology = pd.DataFrame.from_records(
+        cursor_dat_tech.fetchall(), columns=columns_tech
+    )
+
+    cursor_dat_feature = cur.execute("SELECT * FROM DATA2;")
+    columns_feature = [col[0] for col in cursor_dat_feature.description]
+    data_feature = pd.DataFrame.from_records(
+        cursor_dat_feature.fetchall(), columns=columns_feature
+    )
+
+    names_tech = data_technology["name"]
+
+    names_feat = data_feature["Name"]
+
+    data_feature["neu"] = 1
+
+    print(data_feature)
+    print(names_tech)
+    print(names_feat)
+    return render_template(
+        "main/featuretech.html",
+        names_tech=names_tech,
+        names_feat=names_feat,
+        data_technology=data_technology,
+        data_feature=data_feature,
+    )
+
 
 # ------------------------------------------------------- Cost
 @main.route("/cost", methods=["GET", "POST"])
@@ -116,7 +154,9 @@ def cost():
     #  zeit je einheit prozess te muss string sein (float() muss noch eingestellt werden)
     tn = data_tech_ft.hauptzeit_tn  # s
     tr = data_tech_ft.ruestzeit_tr  # s
-    nl = data_tech_ft.losgroesse_nl  # -
+    nl = (
+        data_tech_ft.losgroesse_nl
+    )  # -  Losgröße bezeichnet die Menge von Produkten oder Teilen, die direkt hintereinander ohne eine Unterbrechung der Fertigung produziert wird
     twz = data_tech_ft.werkzeugwechselzeit_twz  # s
     nwz = data_tech_ft.standmenge_nwz  # wird auch Anzahl Werkstücke je Werkzeug -
     twst = data_tech_ft.werkstückwechselzeit_twst  # s
@@ -140,13 +180,16 @@ def cost():
     zeit_einheit_prozess_te = (tn + t1 + t2 + twst) / xfm  # vektor [s]/[-]
     data_tech_ft["zeit_einheit_prozess_te"] = zeit_einheit_prozess_te
 
-    Kl = Klh * zeit_einheit_prozess_te  # €/s
+    Kl = (Klh * zeit_einheit_prozess_te) / 3600  # €/h      3600s/h
+
     ka = (AW - VE) / ta  # €/a
     kz = ((AW + VE) / 2) * z * 0.01  # €/a
 
     Kmh = (
         ka + kz + ki + kr + ke
     ) / Tn  # €/h               (€/a + €/a + €/a + €/a + €/a) / 3200 h/a
+    print(Kmh)
+
     Fertigungskosten = (
         Kmh * (zeit_einheit_prozess_te / 3600) + Kl + Kwt / nwz + Kx
     )  # €         €/3600s * s + € + €
@@ -160,7 +203,6 @@ def cost():
     fertigungssystemkosten = data_tech_ft["Fertigungskosten"].sum()
     print(fertigungssystemkosten)
     print(fertigungssystemzeit)
-    
 
     x = data_tech_ft
 

@@ -1,0 +1,131 @@
+{% extends 'base.html' %} {% block content %}
+<style>
+    .form-group input {
+        width: auto;
+    }
+
+    table input {
+        width: 25px;
+    }
+
+    .container-wrapper {
+        background-color: rgba(0, 84, 159, 0.5);
+        border-radius: 4px;
+    }
+
+    .clickLabel {
+        cursor: pointer;
+        border-radius: 6px;
+    }
+
+    .table-container {
+        background-color: white;
+        border-radius: 4px;
+    }
+
+    .jumbotron {
+        background-color: rgba(0, 84, 159, 0.5);
+        border-radius: 4px;
+    }
+
+    .jumbotron2 {
+        background-color: rgba(117, 169, 214, 0.8);
+        border-radius: 4px;
+    }
+
+    .jumbotron3 {
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 4px;
+        color: rgba(0, 84, 159, 1);
+    }
+
+    .jumbotron4 {
+        background-color: rgba(255, 255, 255, 0);
+        border-radius: 4px;
+        color: rgba(0, 84, 159, 1);
+    }
+
+    .Architektur {
+        background: none;
+        color: black;
+        font-style: normal;
+        font-weight: normal;
+    }
+
+    .FS {
+        margin-left: 50px;
+        color: black;
+        background-color: transparent;
+        border: transparent;
+        height: 30px;
+        width: auto;
+        font-size: 24px;
+    }
+
+    .FTdaten {
+        margin-left: 50px;
+        text-align: center;
+        font-size: 11pt;
+        font-family: arial;
+        text-decoration: none;
+        color: black;
+        background-color: rgba(0, 84, 159, 0.1);
+        border-collapse: separate;
+        border-spacing: 10px;
+    }
+
+    .Gelb {
+        color: #FFFF00;
+    }
+
+    .Grün {
+        color: #00FF00;
+    }
+
+    .Rot {
+        color: #FF0000;
+    }
+</style>
+<div class="container">
+    <div class="jumbotron row">
+        <div class="container text-white text-center">
+            <h2 class="display-4 text-center pb-5">
+                Feature-Technologie-Zuordnung
+            </h2>
+        </div>
+        <div class="container text-white">
+            <div class="jumbotron3 mt-3">
+                <div class="card-body">
+                    <div class="jumbotron3 mt-3 p-2 text-white">
+                        <div class="table table-bordered">
+                            <table class="table">
+                                <caption>Änderungszeiten und -kosten des ausgewählten Systems</caption>
+                                <thead>
+                                    <tr>
+                                        <td scope="col">Index</td>
+                                        <td scope="col">Feature</td>
+                                        {% for key,value in data_technology.iterrows() %}
+                                        <th scope="col">{{ value['name'] }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for key,value in data_feature.iterrows() %}
+                                    <tr>
+                                        <th scope="row">{{
+                                            value['index'] }}</th>
+                                        <th scope="row">{{
+                                            value['Name'] }}</th>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock%}

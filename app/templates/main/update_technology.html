@@ -60,7 +60,7 @@
         <div class="col-9 p-4">
           <div class="table-container">
             <div class="p-3">
-              <div class="table-responsive-lg">
+              <div class="table table-bordered">
                 <table class="table">
                   <caption>Fertigungstoleranzen {{ technologie.name }}</caption>
                   <thead>
@@ -136,7 +136,7 @@
                   </tbody>
                 </table>
               </div>
-              <div class="table-responsive-lg">
+              <div class="table table-bordered">
                 <table class="table">
                   <caption>Fertigungszeiten je Einheit {{ technologie.name }}</caption>
                   <thead>
@@ -180,7 +180,7 @@
                   </tbody>
                 </table>
               </div>
-              <div class="table-responsive-lg">
+              <div class="table table-bordered">
                 <table class="table">
                   <caption>Maschinenspezifische Daten zur Bestimmung der Fertigungskosten {{ technologie.name }}
                   </caption>
@@ -202,7 +202,7 @@
                           value="{{ technologie.verkaufserloes_VE}}" required></th>
                     </tr>
                     <tr>
-                      <th scope="row">Abwicklungsdauer ta [s]</th>
+                      <th scope="row">Abwicklungsdauer ta [a]</th>
                       <th><input class='form-control' style="width: 70px" type="text" name="cb73"
                           value="{{ technologie.abwicklungsdauer_ta}}" required></th>
                       <th scope="row">Raumkosten kr [€/Jahr]</th>
@@ -243,7 +243,7 @@
                   </tbody>
                 </table>
               </div>
-              <div class="table-responsive-lg">
+              <div class="table table-bordered">
                 <table class="table">
                   <caption>Input und Output {{ technologie.name }}
                   </caption>
