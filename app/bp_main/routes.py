@@ -70,10 +70,10 @@ def seed():
 #
 
 # vergleich Featureliste mit Technologien
-
-
-@main.route("featuretech", methods=["GET", "Post"])
-def technologyFeature():
+def dataset():
+    """
+    loading data from dataset and safing in dataframe
+    """
     tool = Tool.query.first()
     conn = sqlite3.connect("app.db")
     cur = conn.cursor()
@@ -89,6 +89,13 @@ def technologyFeature():
     data_feature = pd.DataFrame.from_records(
         cursor_dat_feature.fetchall(), columns=columns_feature
     )
+    return data_technology, data_feature
+
+
+@main.route("featuretech", methods=["GET", "Post"])
+def technologyFeature():
+
+    data_technology, data_feature = dataset()
 
     names_tech = data_technology["name"]
 
@@ -96,6 +103,7 @@ def technologyFeature():
 
     data_feature["neu"] = 1
 
+    print(data_technology)
     print(data_feature)
     print(names_tech)
     print(names_feat)
