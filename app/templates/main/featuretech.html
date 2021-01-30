@@ -105,8 +105,8 @@
                                         <td scope="col">Index</td>
                                         <td scope="col">Feature</td>
                                         {% for key,value in data_technology.iterrows() %}
-                                        <th scope="col">{{ value['name'] }}</th>
-                                        {% endfor %}
+                                        <td scope="col">{{ value['name'] }}</th>
+                                            {% endfor %}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -116,6 +116,9 @@
                                             value['index'] }}</th>
                                         <th scope="row">{{
                                             value['Name'] }}</th>
+                                        {% for key,value in data_technology.iterrows() %}
+                                        <th scope="col"><input type="radio"></th>
+                                        {% endfor %}
                                     </tr>
                                     {% endfor %}
                                 </tbody>
