@@ -1,10 +1,67 @@
 Technologie feature zuordnung und die charakterisierenden Merkmale:
-															
-		Merkmale													
-Feature	Technologie	1	2	3	4	5	6	7	8	9	10	11	12		
-Absatz	Fräsen, Schleifen	Ebenheit	Parallelität	Position	Länge (+-)	Breite (+-)	Höhe (+-)	prismatic=true	positive=ture						
-Bohrung	Brohren, Fräsen	Bohrungsgrund=kegel	Durchmesser (+-)					prismatic=false	positive=false						
-Innengewinde	Bohren, Fräsen	Gewindeart	Durchmesser (+-)	Steigung	Länge (+-)			prismatic=false	positive=false						
-T-Nut	Fräsen, Schleifen	Tiefe (+-)	Eckenradius	Breite Fuss (+-)	Länge (+-)	Breite (+-)	Tiefe Fuss (+-)	prismatic=true	positive=false						
-Zylindersenkung	Bohren, Fräsen	Tiefe (+-)	Durchmesser (+-)					prismatic=false	positive=false						
-Halbzeug prismatisch	…	Werkstoff			Länge (+-)	Breite (+-)	Höhe (+-)	prismatic=true	positive=ture						
+
+Feature: Absatz
+Moegliche Technologien:	Fräsen, Schleifen
+Faktoren:
+	- Rauheit
+	- Ebenheit
+	- Parallelität
+	- Position
+	- Länge (+-)
+	- Breite (+-)
+	- Höhe (+-)
+	- prismatic=true
+	- positive=ture
+	- Werkstoff
+
+Feature: Bohrung
+Moegliche Technologien: Bohren, Fräsen
+Faktoren:
+	- Bohrungsgrund=kegel
+	- Durchmesser (+-)
+	- prismatic=false
+	- Werkstoff
+	- positive=false
+
+Feature: Innengewinde
+Moegliche Technologien: Bohren, Fräsen
+Faktoren: 
+	- Gewindeart
+	- Durchmesser (+-)
+	- Steigung
+	- Länge (+-)
+	- prismatic=false
+	- positive=false
+	- Werkstoff
+
+Feature: T-Nut
+Moegliche Technologien: Fräsen, Schleifen
+Faktoren:
+	- Tiefe (+-)
+	- Eckenradius
+	- Breite
+	- Fuss (+-)
+	- Länge (+-)
+	- Breite (+-)
+	- Tiefe
+	- Fuss (+-)
+	- prismatic=true
+	- positive=false
+	- Werkstoff
+
+Feature: Zylindersenkung
+Moegliche Technologien: Bohren, Fräsen
+Faktoren:
+	- Tiefe (+-)
+	- Durchmesser (+-)
+	- prismatic=false
+	- positive=false
+	- Halbzeug prismatisch
+	- Werkstoff
+	- Länge (+-)
+	- Breite (+-)
+	- Höhe (+-)
+	- prismatic=true
+	- positive=ture
+
+
