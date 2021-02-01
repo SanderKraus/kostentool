@@ -1,5 +1,4 @@
 from pandas import DataFrame
-import pandas as pd
 
 
 class SanderDataModel:
