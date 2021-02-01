@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div style="display: flex;flex-direction: row;">
+    <div>
+      <h3>Aktuelles Bauteil</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Features</th>
+            <th>Technology</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key, value in data.df_1.iterrows() %}
+          <tr>
+            <td>{{value['Classifier']}}</td>
+            <td>
+              <select class="selected" name="tec">
+                {% for key, value in data.df_tec.iterrows() %}
+                <option value="{{ value['name'] }}">{{ value['name'] }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div style="display: inline; margin-left: 20px;">
+      <h3>Es gibt {{ data.df_changes.index | length }} Unterschied(e) im neuen Bauteil</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Features</th>
+            <th>Technology</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key, value in data.df_changes.iterrows() %}
+          <tr>
+            <td>{{value['Classifier']}}</td>
+            <td>
+              <select class="selected" name="tec">
+                {% for key, value in data.df_tec.iterrows() %}
+                <option value="{{ value['name'] }}">{{ value['name'] }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button onclick="onCalculateCost()" type="button" style="margin: 10px; padding: 5px;">Aenderungkosten
+        kalkulieren</button>
+    </div>
+  </div>
+  <script>
+    function onCalculateCost() {
+      var elements = document.getElementsByClassName('selected');
+      var CostList = [];
+      var data = {{ data.df_tec.to_json() | safe
+    }};
+    console.log(data)
+    for (let i = 0; i < elements.length; i++) {
+      var element = elements.item(i);
+      console.log(element.value)
+
+    };
+    };
+  </script>
+</body>
+
+</html>

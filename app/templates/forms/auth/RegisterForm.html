@@ -1,6 +1,0 @@
-{% from "./forms/_formhelper.html" import render_field %}
-<form method="POST">
-  {{ form.csrf_token }} {{ render_field(form.username) }} {{
-  render_field(form.password) }} {{ render_field(form.confirm)}}
-  <button type="submit" class="btn btn-primary">Registrieren</button>
-</form>

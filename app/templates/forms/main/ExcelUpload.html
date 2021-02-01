@@ -1,5 +1,0 @@
-{% from "./forms/_formhelper.html" import render_field %}
-<form method="POST" enctype="multipart/form-data">
-  {{ form.csrf_token }} {{ render_field(form.send_file) }}
-  <button type="submit" class="btn btn-primary">Upload</button>
-</form>

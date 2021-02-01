@@ -1,7 +1,0 @@
-{% macro render_field(field) %}
-<div class="form-group">
-  {{ field.label }} {% if field.type == 'FileField' %} {{ field(
-  class="form-control-file", **kwargs) |safe }} {% else %} {{
-  field(class="form-control", **kwargs) |safe }} {% endif %}
-</div>
-{% endmacro %}
