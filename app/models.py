@@ -94,27 +94,123 @@ class Technology(db.Model):
     position = db.Column(db.Integer, nullable=True)
     name = db.Column(db.String(), unique=True, nullable=True)
     alt_technology = db.Column(db.Integer)
-    connection = db.Column(db.String())
+    connection = db.Column(db.String)
+
+    # Absatz
+    ebenheit_a = db.Column(db.Integer)
+    ebenheit_b = db.Column(db.Integer)
+    ebenheit_c = db.Column(db.Integer)
+    ebenheit_d = db.Column(db.Integer)
+
+    paralellitaet_a = db.Column(db.Integer)
+    paralellitaet_b = db.Column(db.Integer)
+    paralellitaet_c = db.Column(db.Integer)
+    paralellitaet_d = db.Column(db.Integer)
+
+    position_a = db.Column(db.Integer)
+    position_b = db.Column(db.Integer)
+    position_c = db.Column(db.Integer)
+    position_d = db.Column(db.Integer)
+
     roughness_a = db.Column(db.Integer)
     roughness_b = db.Column(db.Integer)
     roughness_c = db.Column(db.Integer)
     roughness_d = db.Column(db.Integer)
+
     shape_tolerance_a = db.Column(db.Integer)
     shape_tolerance_b = db.Column(db.Integer)
     shape_tolerance_c = db.Column(db.Integer)
     shape_tolerance_d = db.Column(db.Integer)
-    max_machining_path_x_a = db.Column(db.Integer)
+
+    max_machining_path_x_a = db.Column(db.Integer)  # länge
     max_machining_path_x_b = db.Column(db.Integer)
     max_machining_path_x_c = db.Column(db.Integer)
     max_machining_path_x_d = db.Column(db.Integer)
-    max_machining_path_y_a = db.Column(db.Integer)
+
+    max_machining_path_y_a = db.Column(db.Integer)  # breite
     max_machining_path_y_b = db.Column(db.Integer)
     max_machining_path_y_c = db.Column(db.Integer)
     max_machining_path_y_d = db.Column(db.Integer)
-    max_machining_path_z_a = db.Column(db.Integer)
+
+    max_machining_path_z_a = db.Column(db.Integer)  # hoehe
     max_machining_path_z_b = db.Column(db.Integer)
     max_machining_path_z_c = db.Column(db.Integer)
     max_machining_path_z_d = db.Column(db.Integer)
+
+    # Bohrung
+
+    durchmesser_a = db.Column(db.Integer)
+    durchmesser_b = db.Column(db.Integer)
+    durchmesser_c = db.Column(db.Integer)
+    durchmesser_d = db.Column(db.Integer)
+
+    bohrunglaenge_a = db.Column(db.Integer)
+    bohrunglaenge_b = db.Column(db.Integer)
+    bohrunglaenge_c = db.Column(db.Integer)
+    bohrunglaenge_d = db.Column(db.Integer)
+
+    # Innengewinde
+
+    gewindeart = db.Column(db.String)
+    gewindesteigung = db.Column(db.Integer)
+
+    gewindelaenge_a = db.Column(db.Integer)
+    gewindelaenge_b = db.Column(db.Integer)
+    gewindelaenge_c = db.Column(db.Integer)
+    gewindelaenge_d = db.Column(db.Integer)
+
+    # T-Nut
+
+    nuttiefe_a = db.Column(db.Integer)
+    nuttiefe_b = db.Column(db.Integer)
+    nuttiefe_c = db.Column(db.Integer)
+    nuttiefe_d = db.Column(db.Integer)
+
+    nutbreite_a = db.Column(db.Integer)
+    nutbreite_b = db.Column(db.Integer)
+    nutbreite_c = db.Column(db.Integer)
+    nutbreite_d = db.Column(db.Integer)
+
+    nutlaenge_a = db.Column(db.Integer)
+    nutlaenge_b = db.Column(db.Integer)
+    nutlaenge_c = db.Column(db.Integer)
+    nutlaenge_d = db.Column(db.Integer)
+
+    eckradius_a = db.Column(db.Integer)
+    eckradius_b = db.Column(db.Integer)
+    eckradius_c = db.Column(db.Integer)
+    eckradius_d = db.Column(db.Integer)
+
+    breitefuss_a = db.Column(db.Integer)
+    breitefuss_b = db.Column(db.Integer)
+    breitefuss_c = db.Column(db.Integer)
+    breitefuss_d = db.Column(db.Integer)
+
+    laengefuss_a = db.Column(db.Integer)
+    laengefuss_b = db.Column(db.Integer)
+    laengefuss_c = db.Column(db.Integer)
+    laengefuss_d = db.Column(db.Integer)
+
+    tiefefuss_a = db.Column(db.Integer)
+    tiefefuss_b = db.Column(db.Integer)
+    tiefefuss_c = db.Column(db.Integer)
+    tiefefuss_d = db.Column(db.Integer)
+
+    # Zylindersenkung
+
+    senkungtiefe_a = db.Column(db.Integer)
+    senkungtiefe_b = db.Column(db.Integer)
+    senkungtiefe_c = db.Column(db.Integer)
+    senkungtiefe_d = db.Column(db.Integer)
+
+    senkungdurchmesser_a = db.Column(db.Integer)
+    senkungdurchmesser_b = db.Column(db.Integer)
+    senkungdurchmesser_c = db.Column(db.Integer)
+    senkungdurchmesser_d = db.Column(db.Integer)
+
+    # halbzeug
+
+    werkstoff = db.Column(db.Integer)
 
     # Kostentool
     hauptzeit_tn = db.Column(db.Integer)
